@@ -2,11 +2,17 @@
 import Providers from "./providers";
 
 export const metadata = {
-  title: "Base Privy Gateway",
-  description: "Next.js + Tailwind + PWA starter with Privy auth.",
-  applicationName: "Base Privy Gateway",
+  title: "Base Wheels - NFT Car Collection",
+  description: "Collect, build, and own real toy cars as NFTs on Base blockchain. The ultimate Hot Wheels digital collection.",
+  applicationName: "Base Wheels",
   manifest: "/manifest.webmanifest",
-  themeColor: "#0f766e",
+  themeColor: "#ff7a00",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   icons: {
     icon: "/icons/icon.svg",
   },

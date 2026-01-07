@@ -1,355 +1,255 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 
 const background = "/assets/backgrounds/view-car-running-high-speed%20%282%29.jpg";
 const logo = "/assets/icons/logo2.png";
-const googleIcon = "/assets/icons/google.png";
-const facebookIcon = "/assets/icons/facebook.svg";
-const eyeOpen = "/assets/icons/view.png";
-const eyeClosed = "/assets/icons/hide.png";
+const launchButton = "/assets/images/1.png";
+const fireIcon = "/assets/icons/fire.png";
+
+// Hot Wheels Car Collection
+const hotWheelsCarsTop = [
+  { name: "Blaze Runner", image: "/assets/images/10.png" },
+  { name: "Turbo Phantom", image: "/assets/images/11.png" },
+  { name: "Chrome Viper", image: "/assets/images/12.png" },
+  { name: "High Speed", image: "/assets/images/view-car-running-high-speed.png" },
+  { name: "Neon Drifter", image: "/assets/images/13.png" },
+];
+
+const hotWheelsCarsBottom = [
+  { name: "Speed Demon", image: "/assets/images/15.png" },
+  { name: "3D Model", image: "/assets/images/view-three-dimensional-car-model.jpg" },
+  { name: "Thunder Bolt", image: "/assets/images/16.png" },
+  { name: "Fire Beast", image: "/assets/images/17.png" },
+  { name: "Steel Racer", image: "/assets/images/18.png" },
+];
+
+// Features untuk section 3
+const features = [
+  {
+    icon: "/assets/icons/car.png",
+    title: "Instant Wallet Setup",
+    description: "Get started in seconds with seamless onboarding",
+  },
+  {
+    icon: "/assets/icons/treasure.png",
+    title: "Collect Exclusive NFTs",
+    description: "Own rare digital collectibles and trade them",
+  },
+  {
+    icon: "/assets/icons/dollar.png",
+    title: "Earn Rewards",
+    description: "Generate value from your collection",
+  },
+  {
+    icon: "/assets/icons/communication.png",
+    title: "Community Driven",
+    description: "Join thousands of collectors worldwide",
+  },
+];
 
 export default function Home() {
   const { ready, login } = usePrivy();
-  const [stage, setStage] = useState("start");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const [showSignupConfirm, setShowSignupConfirm] = useState(false);
+  const [activeCarIndexTop, setActiveCarIndexTop] = useState(0);
+  const [activeCarIndexBottom, setActiveCarIndexBottom] = useState(0);
+  const carouselTopRef = useRef(null);
+  const carouselBottomRef = useRef(null);
 
-  const isLogin = stage === "login";
-  const isSignup = stage === "signup";
-  const isForm = isLogin || isSignup;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      <div className="absolute inset-0">
-        <div
-          className={`absolute inset-0 bg-cover bg-center transition-all duration-700 ${
-            isForm ? "scale-105 blur-[2px] brightness-110" : ""
-          }`}
-          style={{ backgroundImage: `url('${background}')` }}
-        />
-        <div
-          className={`absolute inset-0 transition-opacity duration-700 ${
-            isForm
-              ? "bg-gradient-to-b from-black/25 via-black/55 to-black/85"
-              : "bg-gradient-to-b from-black/20 via-black/10 to-black/70"
-          }`}
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[430px] flex-col px-6 py-8">
-        <div className="relative flex flex-1 items-center justify-center">
-          <section
-            className={`absolute inset-0 flex flex-col items-center justify-between pt-8 pb-12 text-center transition-all duration-700 ${
-              isForm ? "pointer-events-none opacity-0 translate-y-6" : "opacity-100"
-            }`}
-          >
-            <div className="flex flex-col items-center gap-3">
-              <img
-                src={logo}
-                alt="Base Wheels"
-                className="w-64 drop-shadow-[0_12px_35px_rgba(0,0,0,0.7)]"
-              />
-            </div>
-
-            <div className="flex flex-col items-center gap-4">
-              <p className="hotwheels-tagline text-[11px] uppercase tracking-[0.4em]">
-                Collect. Build. Own Real toy car.
-              </p>
-              <button
-                type="button"
-                onClick={() => setStage("login")}
-                className="group relative flex w-72 items-center justify-center"
-              >
-                <img
-                  src="/assets/images/1.png"
-                  alt="Login"
-                  className="w-full drop-shadow-[0_10px_30px_rgba(0,0,0,0.7)] transition group-hover:translate-y-[-2px]"
-                />
-                <span className="hotwheels-cta-label absolute left-[29%] top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg uppercase tracking-[0.35em] drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
-                  Login
-                </span>
-              </button>
-              <div className="hotwheels-stripes h-1 w-36 rounded-full opacity-80" />
-            </div>
-          </section>
-
-          <section
-            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ${
-              isLogin ? "opacity-100" : "pointer-events-none opacity-0 translate-y-6"
-            }`}
-          >
-            <div className="w-full max-w-sm">
-              <button
-                type="button"
-                onClick={() => setStage("start")}
-                className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/80 transition hover:border-white/40 hover:text-white"
-                aria-label="Back"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-
-              <div className="hotwheels-panel relative rounded-[34px] px-6 pb-7 pt-16">
-                <img
-                  src={logo}
-                  alt="Base Wheels"
-                  className="hotwheels-logo absolute left-1/2 top-0 w-64 -translate-x-1/2 -translate-y-1/2"
-                />
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <p className="hotwheels-form-title uppercase tracking-[0.45em]">Login</p>
-                </div>
-
-                <div className="mt-6 grid gap-4">
-                  <label htmlFor="username" className="sr-only">
-                    Username or email
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="username"
-                      type="text"
-                      placeholder="Username/email"
-                      autoComplete="username"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                  </div>
-
-                  <label htmlFor="password" className="sr-only">
-                    Password
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="password"
-                      autoComplete="current-password"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((value) => !value)}
-                      className="shrink-0"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      <img src={showPassword ? eyeClosed : eyeOpen} alt="" className="h-4 w-4 opacity-80" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-end pr-3 text-[11px] text-amber-100/80">
-                    <button type="button">Forgot Password ?</button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={login}
-                    disabled={!ready}
-                    className="hotwheels-cta mt-2 w-full rounded-full px-6 py-3 text-sm font-extrabold uppercase tracking-[0.35em] text-amber-950 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    masuk
-                  </button>
-
-                  <div className="flex items-center justify-center gap-4">
-                    <button
-                      type="button"
-                      onClick={login}
-                      className="grid h-9 w-9 place-items-center rounded-full bg-white/90"
-                      aria-label="Continue with Google"
-                    >
-                      <img src={googleIcon} alt="Google" className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={login}
-                      className="grid h-9 w-9 place-items-center rounded-full bg-white/90"
-                      aria-label="Continue with Facebook"
-                    >
-                      <img src={facebookIcon} alt="Facebook" className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-center">
-                    <img src="/assets/images/7.png" alt="" className="w-56" />
-                  </div>
-
-                  <label className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.3em] text-amber-100/80">
-                    <input type="checkbox" className="h-3 w-3 accent-amber-400" />
-                    Remember Me
-                  </label>
-
-                  <button
-                    type="button"
-                    onClick={() => setStage("signup")}
-                    className="text-center text-[11px] text-amber-100/70"
-                  >
-                    Don&apos;t have an account? <span className="text-amber-200">Sign up</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section
-            className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ${
-              isSignup ? "opacity-100" : "pointer-events-none opacity-0 translate-y-6"
-            }`}
-          >
-            <div className="w-full max-w-sm">
-              <button
-                type="button"
-                onClick={() => setStage("start")}
-                className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/80 transition hover:border-white/40 hover:text-white"
-                aria-label="Back"
-              >
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-
-              <div className="hotwheels-panel relative rounded-[34px] px-6 pb-7 pt-16">
-                <img
-                  src={logo}
-                  alt="Base Wheels"
-                  className="hotwheels-logo absolute left-1/2 top-0 w-64 -translate-x-1/2 -translate-y-1/2"
-                />
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <p className="hotwheels-form-title uppercase tracking-[0.45em]">Sign up</p>
-                </div>
-
-                <div className="mt-6 grid gap-4">
-                  <label htmlFor="signup-username" className="sr-only">
-                    Username
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="signup-username"
-                      type="text"
-                      placeholder="username"
-                      autoComplete="username"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                  </div>
-
-                  <label htmlFor="signup-email" className="sr-only">
-                    Email
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="signup-email"
-                      type="email"
-                      placeholder="email"
-                      autoComplete="email"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                  </div>
-
-                  <label htmlFor="signup-password" className="sr-only">
-                    Enter password
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="signup-password"
-                      type={showSignupPassword ? "text" : "password"}
-                      placeholder="enter password"
-                      autoComplete="new-password"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowSignupPassword((value) => !value)}
-                      className="shrink-0"
-                      aria-label={showSignupPassword ? "Hide password" : "Show password"}
-                    >
-                      <img src={showSignupPassword ? eyeClosed : eyeOpen} alt="" className="h-4 w-4 opacity-80" />
-                    </button>
-                  </div>
-
-                  <label htmlFor="signup-confirm" className="sr-only">
-                    Re-enter password
-                  </label>
-                  <div className="hotwheels-input flex items-center gap-3 rounded-full px-4 py-3">
-                    <input
-                      id="signup-confirm"
-                      type={showSignupConfirm ? "text" : "password"}
-                      placeholder="Re-enter password"
-                      autoComplete="new-password"
-                      className="w-full bg-transparent text-sm text-amber-50 placeholder:text-amber-100/70 focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowSignupConfirm((value) => !value)}
-                      className="shrink-0"
-                      aria-label={showSignupConfirm ? "Hide password" : "Show password"}
-                    >
-                      <img src={showSignupConfirm ? eyeClosed : eyeOpen} alt="" className="h-4 w-4 opacity-80" />
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={login}
-                    disabled={!ready}
-                    className="hotwheels-cta mt-2 w-full rounded-full px-6 py-3 text-sm font-extrabold uppercase tracking-[0.35em] text-amber-950 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Daftar
-                  </button>
-
-                  <div className="flex items-center justify-center gap-4">
-                    <button
-                      type="button"
-                      onClick={login}
-                      className="grid h-9 w-9 place-items-center rounded-full bg-white/90"
-                      aria-label="Continue with Google"
-                    >
-                      <img src={googleIcon} alt="Google" className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={login}
-                      className="grid h-9 w-9 place-items-center rounded-full bg-white/90"
-                      aria-label="Continue with Facebook"
-                    >
-                      <img src={facebookIcon} alt="Facebook" className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-center">
-                    <img src="/assets/images/7.png" alt="" className="w-56" />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setStage("login")}
-                    className="text-center text-[11px] text-amber-100/70"
-                  >
-                    already have an account. try <span className="text-amber-200">Login</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+    <main className="relative overflow-x-hidden bg-black text-white">
+      {/* SECTION 1: HERO */}
+      <section className="section-full relative px-4 py-12 text-center sm:px-6 sm:py-16">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${background}')` }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black" />
         </div>
-      </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl">
+          <div className="-mt-20 flex justify-center sm:-mt-[80px]">
+            <img
+              src={logo}
+              alt="Base Wheels"
+              className="w-56 drop-shadow-[0_16px_40px_rgba(0,0,0,0.8)] sm:w-72 md:w-96"
+            />
+          </div>
+
+          <h1 className="hotwheels-title mt-[350px] mb-2 text-2xl font-black leading-tight sm:mt-[350px] sm:mb-3 sm:text-4xl md:text-6xl">
+            The Ultimate NFT Car Collection on Base
+          </h1>
+
+          <p className="hotwheels-tagline mb-10 text-xs uppercase tracking-widest sm:mb-12 sm:text-base md:text-lg">
+            Collect. Build. Own Real Toy Cars.
+          </p>
+
+          <div className="hotwheels-launch-wrap mx-auto w-full max-w-[380px]">
+            <button
+              type="button"
+              onClick={login}
+              disabled={!ready}
+              className="hotwheels-launch-button"
+            >
+              <img src={fireIcon} alt="" className="hotwheels-launch-icon" />
+              <span className="hotwheels-launch-text">Launch App</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 2: ECOSYSTEM */}
+      <section className="section-full bg-gradient-to-b from-white to-gray-100 px-4 py-8 text-slate-900 sm:px-6 sm:py-16">
+        <div className="mx-auto w-full">
+          <h2 className="mb-2 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl">
+            A Collection That Works For Your Crypto Ecosystem
+          </h2>
+          <p className="mx-auto mb-6 w-full break-words text-center text-base leading-snug text-slate-600 sm:max-w-2xl sm:mb-8 sm:text-lg md:text-xl">
+            Seamless integration across platforms. Collect premium Hot Wheels quickly
+            and transparently, making it easy to own collectibles in the digital age.
+          </p>
+
+          {/* Hot Wheels Carousel - TOP (Scrolls LEFT) */}
+          <div className="relative mb-4 overflow-hidden py-4">
+            <div className="flex animate-scroll-left gap-6 sm:gap-8" style={{ pointerEvents: 'none' }}>
+              {[...hotWheelsCarsTop, ...hotWheelsCarsTop, ...hotWheelsCarsTop, ...hotWheelsCarsTop].map((car, index) => (
+                <div
+                  key={index}
+                  className="car-card group min-w-[200px] max-w-[200px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[280px] sm:max-w-[280px] sm:p-5"
+                >
+                  <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-orange-50 to-yellow-50 sm:mb-4 sm:h-40">
+                    <img
+                      src={car.image}
+                      alt={car.name}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-wide text-slate-800 sm:text-sm md:text-base">
+                    {car.name}
+                  </h3>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Hot Wheels Carousel - BOTTOM (Scrolls RIGHT) */}
+          <div className="relative mb-4 overflow-hidden py-4">
+            <div className="flex animate-scroll-right gap-6 sm:gap-8" style={{ pointerEvents: 'none' }}>
+              {[...hotWheelsCarsBottom, ...hotWheelsCarsBottom, ...hotWheelsCarsBottom, ...hotWheelsCarsBottom].map((car, index) => (
+                <div
+                  key={index}
+                  className="car-card group min-w-[200px] max-w-[200px] flex-shrink-0 rounded-2xl bg-white p-4 shadow-xl sm:min-w-[280px] sm:max-w-[280px] sm:p-5"
+                >
+                  <div className="mb-3 flex h-32 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-orange-50 to-yellow-50 sm:mb-4 sm:h-40">
+                    <img
+                      src={car.image}
+                      alt={car.name}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <h3 className="text-center text-xs font-bold uppercase leading-tight tracking-wide text-slate-800 sm:text-sm md:text-base">
+                    {car.name}
+                  </h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3: HOW IT WORKS */}
+      <section className="section-full bg-gradient-to-b from-gray-900 to-black px-4 py-12 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="hotwheels-title mb-3 text-center text-2xl font-black sm:mb-4 sm:text-3xl md:text-5xl">
+            How Base Wheels Works
+          </h2>
+          <p className="mx-auto mb-10 max-w-2xl text-center text-sm text-gray-300 sm:mb-16 sm:text-base md:text-lg">
+            Blockchain-powered collecting makes NFT ownership easy, secure, and transparent.
+          </p>
+
+          <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="hotwheels-panel group rounded-2xl p-5 text-center transition-transform hover:scale-105 sm:p-6"
+              >
+                <div className="mb-3 flex justify-center sm:mb-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 p-3 shadow-lg sm:h-20 sm:w-20 sm:p-4">
+                    <img
+                      src={feature.icon}
+                      alt={feature.title}
+                      className="h-8 w-8 object-contain brightness-0 invert sm:h-10 sm:w-10"
+                    />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-base font-bold text-orange-300 sm:text-lg">{feature.title}</h3>
+                <p className="text-xs text-gray-300 sm:text-sm">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 text-center sm:mt-12">
+            <div className="glass-light mx-auto inline-block rounded-2xl px-6 py-5 sm:px-8 sm:py-6">
+              <div className="mb-3 flex items-center justify-center gap-3 sm:mb-4">
+                <img
+                  src="/assets/icons/pngwing.com.png"
+                  alt="Hot Wheels Car"
+                  className="h-20 w-20 object-contain sm:h-24 sm:w-24"
+                />
+              </div>
+              <p className="mb-3 text-base font-semibold text-slate-800 sm:mb-4 sm:text-lg">
+                Vote <span className="text-blue-600">On-chain</span> | Or{" "}
+                <span className="text-red-600">Off-chain</span> for your Crypto Wallet
+              </p>
+              <div className="flex justify-center gap-2 sm:gap-3">
+                <button className="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
+                  On-chain
+                </button>
+                <button className="rounded-full bg-red-600 px-5 py-2 text-sm font-bold text-white shadow-md transition-transform hover:scale-105 sm:px-6 sm:text-base">
+                  Off-chain
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4: FINAL CTA */}
+      <section className="section-full bg-gradient-to-b from-slate-100 to-white px-4 py-12 text-slate-900 sm:px-6 sm:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="mb-4 text-3xl font-black text-slate-900 sm:mb-6 sm:text-4xl md:text-6xl">
+            Ready to Own Digital Hot Wheels? ???
+          </h2>
+          <p className="mb-8 text-base text-slate-600 sm:mb-10 sm:text-lg md:text-xl">
+            Collect legendary cars as NFTs on Base blockchain. Each car is unique, tradeable, and exclusively yours.
+          </p>
+
+          <div className="hotwheels-launch-wrap mx-auto max-w-sm sm:max-w-md">
+            <button
+              type="button"
+              onClick={login}
+              disabled={!ready}
+              className="hotwheels-launch-button"
+            >
+              <img src={fireIcon} alt="" className="hotwheels-launch-icon" />
+              <span className="hotwheels-launch-text">Launch App</span>
+            </button>
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-6">
+            <a href="#" className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm">
+              Documentation
+            </a>
+            <span className="text-slate-300"></span>
+            <a href="#" className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm">
+              Community
+            </a>
+            <span className="text-slate-300"></span>
+            <a href="#" className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm">
+              Support
+            </a>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
