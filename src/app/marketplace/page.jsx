@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
-import { ethers } from "ethers";
+import { BrowserProvider, Contract, parseUnits } from "ethers";
 
 // Rarity color mapping
 const rarityColorMap = {
@@ -65,7 +65,7 @@ export default function MarketplacePage() {
   }, [ready, authenticated, router]);
 
   // Fetch listings
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
     try {
       setLoadingListings(true);
       const authToken = await getAccessToken();
@@ -93,10 +93,10 @@ export default function MarketplacePage() {
     } finally {
       setLoadingListings(false);
     }
-  };
+  }, [getAccessToken, seriesFilter, sortBy]);
 
   // Fetch my listings
-  const fetchMyListings = async () => {
+  const fetchMyListings = useCallback(async () => {
     try {
       setLoadingMyListings(true);
       const authToken = await getAccessToken();
@@ -124,10 +124,10 @@ export default function MarketplacePage() {
     } finally {
       setLoadingMyListings(false);
     }
-  };
+  }, [getAccessToken, myListingsFilter]);
 
   // Fetch user's cars for selling
-  const fetchMyCars = async () => {
+  const fetchMyCars = useCallback(async () => {
     try {
       const authToken = await getAccessToken();
       const response = await fetch(
@@ -147,10 +147,10 @@ export default function MarketplacePage() {
       console.error("Failed to fetch cars:", error);
       setMyCars([]);
     }
-  };
+  }, [getAccessToken]);
 
   // Fetch MockIDRX balance
-  const fetchBalance = async () => {
+  const fetchBalance = useCallback(async () => {
     try {
       const authToken = await getAccessToken();
       const response = await fetch(
@@ -166,7 +166,7 @@ export default function MarketplacePage() {
     } catch (error) {
       console.error("Failed to fetch balance:", error);
     }
-  };
+  }, [getAccessToken]);
 
   // Initial data fetch
   useEffect(() => {
@@ -174,13 +174,13 @@ export default function MarketplacePage() {
       fetchListings();
       fetchBalance();
     }
-  }, [authenticated, seriesFilter, sortBy]);
+  }, [authenticated, fetchListings, fetchBalance]);
 
   useEffect(() => {
     if (authenticated && activeTab === "my-listings") {
       fetchMyListings();
     }
-  }, [authenticated, activeTab, myListingsFilter]);
+  }, [authenticated, activeTab, fetchMyListings]);
 
   // Handle buy NFT
   const handleBuyClick = (listing) => {
@@ -197,28 +197,63 @@ export default function MarketplacePage() {
     try {
       setBuyStep("buying");
 
+      console.log("Starting purchase:", {
+        listingId: selectedListing.id,
+        price: selectedListing.price,
+        tokenId: selectedListing.carTokenId,
+        seller: selectedListing.seller
+      });
+
+      // Check user balance
+      if (mockIDRXBalance < selectedListing.price) {
+        throw new Error(`Insufficient balance. You have ${mockIDRXBalance} IDRX but need ${selectedListing.price} IDRX`);
+      }
+
       // Get backend wallet address from env
       const backendWallet = process.env.NEXT_PUBLIC_BACKEND_WALLET_ADDRESS;
       if (!backendWallet) {
         throw new Error("Backend wallet address not configured");
       }
 
-      // Approve IDRX
-      const provider = await embeddedWallet.getEthersProvider();
-      const signer = provider.getSigner();
+      // Get Ethereum provider dari Privy
+      const ethereumProvider = await embeddedWallet.getEthereumProvider();
+      const provider = new BrowserProvider(ethereumProvider);
+      const signer = await provider.getSigner();
+
+      // Verify we're on Base Sepolia
+      const network = await provider.getNetwork();
+      console.log("Current network:", network.chainId.toString());
+
+      if (network.chainId !== 84532n) {
+        throw new Error("Please switch to Base Sepolia network (Chain ID: 84532)");
+      }
 
       const mockIDRXAddress = process.env.NEXT_PUBLIC_MOCKIDRX_CONTRACT_ADDRESS;
       const mockIDRXABI = [
         "function approve(address spender, uint256 amount) external returns (bool)",
+        "function balanceOf(address account) external view returns (uint256)",
       ];
 
-      const mockIDRXContract = new ethers.Contract(mockIDRXAddress, mockIDRXABI, signer);
+      const mockIDRXContract = new Contract(mockIDRXAddress, mockIDRXABI, signer);
 
-      const priceWei = ethers.utils.parseUnits(selectedListing.price.toString(), 18);
+      // Double check balance on-chain
+      const balance = await mockIDRXContract.balanceOf(await signer.getAddress());
+      const balanceFormatted = parseFloat(balance) / 1e18;
+      console.log("On-chain IDRX balance:", balanceFormatted);
+
+      if (balanceFormatted < selectedListing.price) {
+        throw new Error(`Insufficient on-chain balance. You have ${balanceFormatted} IDRX`);
+      }
+
+      console.log("Approving IDRX spend...");
+      const priceWei = parseUnits(selectedListing.price.toString(), 18);
       const approveTx = await mockIDRXContract.approve(backendWallet, priceWei);
+      console.log("Approve tx sent:", approveTx.hash);
       await approveTx.wait();
+      console.log("Approve tx confirmed");
 
       // Call backend to buy
+      console.log("Calling backend to execute purchase...");
       const authToken = await getAccessToken();
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/marketplace/buy/${selectedListing.id}`,
@@ -232,6 +267,7 @@ export default function MarketplacePage() {
       );
 
       const data = await response.json();
+      console.log("Backend response:", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Purchase failed");
@@ -281,24 +317,64 @@ export default function MarketplacePage() {
     try {
       setSellStep("listing");
 
+      // Validate tokenId
+      if (!sellCar.tokenId || sellCar.tokenId < 0) {
+        throw new Error("Invalid NFT token ID");
+      }
+
+      console.log("Approving NFT:", {
+        tokenId: sellCar.tokenId,
+        carName: sellCar.name,
+        series: sellCar.series
+      });
+
       // Get backend wallet address
       const backendWallet = process.env.NEXT_PUBLIC_BACKEND_WALLET_ADDRESS;
       if (!backendWallet) {
         throw new Error("Backend wallet address not configured");
       }
 
-      // Approve NFT
-      const provider = await embeddedWallet.getEthersProvider();
-      const signer = provider.getSigner();
+      // Get Ethereum provider dari Privy
+      const ethereumProvider = await embeddedWallet.getEthereumProvider();
+      const provider = new BrowserProvider(ethereumProvider);
+      const signer = await provider.getSigner();
+
+      // Verify we're on Base Sepolia (chainId 84532)
+      const network = await provider.getNetwork();
+      console.log("Current network:", network.chainId.toString());
+
+      if (network.chainId !== 84532n) {
+        throw new Error("Please switch to Base Sepolia network (Chain ID: 84532)");
+      }
 
       const carAddress = process.env.NEXT_PUBLIC_CAR_CONTRACT_ADDRESS;
       const carABI = [
         "function approve(address to, uint256 tokenId) external",
+        "function ownerOf(uint256 tokenId) external view returns (address)",
       ];
 
-      const carContract = new ethers.Contract(carAddress, carABI, signer);
+      const carContract = new Contract(carAddress, carABI, signer);
+
+      // Verify ownership before approving
+      try {
+        const owner = await carContract.ownerOf(sellCar.tokenId);
+        const userAddress = await signer.getAddress();
+        console.log("NFT owner:", owner);
+        console.log("User address:", userAddress);
+
+        if (owner.toLowerCase() !== userAddress.toLowerCase()) {
+          throw new Error("You don't own this NFT");
+        }
+      } catch (error) {
+        console.error("Ownership check failed:", error);
+        throw new Error("Failed to verify NFT ownership. Make sure you own this NFT.");
+      }
+
+      console.log("Sending approve transaction...");
       const approveTx = await carContract.approve(backendWallet, sellCar.tokenId);
+      console.log("Approve tx sent:", approveTx.hash);
       await approveTx.wait();
+      console.log("Approve tx confirmed");
 
       // Create listing
       const authToken = await getAccessToken();
