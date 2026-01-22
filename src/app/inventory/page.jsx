@@ -346,8 +346,8 @@ export default function InventoryPage() {
           {/* Logo */}
           <div className="flex justify-center mb-4">
             <img
-              src="/assets/icons/logo2.png"
-              alt="Hot Wheels"
+              src="/assets/iconApp/MiniGarageIconTransparant.png"
+              alt="MiniGarage"
               className="h-16 object-contain drop-shadow-2xl"
             />
           </div>

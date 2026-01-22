@@ -99,51 +99,122 @@ body {
   }
 }
 
+@keyframes hero-float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes button-shimmer {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0.35;
+  }
+
+  70% {
+    opacity: 0.15;
+  }
+
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
 @layer components {
-  .hotwheels-panel {
+  .minigarage-hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    --parallax-x: 0;
+    --parallax-y: 0;
+  }
+
+  .minigarage-hero-bg {
+    transform: translate3d(calc(var(--parallax-x) * 14px), calc(var(--parallax-y) * 10px), 0) scale(1.06);
+    transition: transform 480ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
+  }
+
+  .minigarage-hero-grid {
+    background-image:
+      linear-gradient(90deg, rgba(255, 170, 90, 0.08) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255, 170, 90, 0.08) 1px, transparent 1px);
+    background-size: 90px 90px;
+    opacity: 0.35;
+    mix-blend-mode: screen;
+    transform: translate3d(calc(var(--parallax-x) * -8px), calc(var(--parallax-y) * -6px), 0);
+    transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .minigarage-hero-glow {
+    background: radial-gradient(70% 55% at 50% 20%, rgba(255, 150, 70, 0.45), rgba(0, 0, 0, 0));
+    opacity: 0.9;
+    filter: blur(12px);
+    transform: translate3d(calc(var(--parallax-x) * -18px), calc(var(--parallax-y) * -12px), 0);
+    transition: transform 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .minigarage-logo-float {
+    animation: hero-float 7s ease-in-out infinite;
+  }
+
+  .minigarage-panel {
     background: linear-gradient(145deg, rgba(46, 34, 20, 0.62), rgba(18, 12, 8, 0.58));
     border: 1px solid rgba(255, 180, 90, 0.7);
     box-shadow: 0 20px 50px -30px rgba(0, 0, 0, 0.75), inset 0 0 45px rgba(255, 175, 80, 0.18);
     backdrop-filter: blur(24px);
   }
 
-  .hotwheels-logo {
+  .minigarage-logo {
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
   }
 
-  .hotwheels-input {
+  .minigarage-input {
     background: rgba(20, 12, 6, 0.55);
     border: 1px solid rgba(255, 166, 70, 0.7);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 18px rgba(255, 142, 0, 0.18);
   }
 
-  .hotwheels-cta {
+  .minigarage-cta {
     background: linear-gradient(90deg, #ff7a00, #f6c453);
     color: #2b1600;
     box-shadow: 0 14px 30px -18px rgba(255, 140, 0, 0.9);
   }
 
-  .hotwheels-login-bar {
+  .minigarage-login-bar {
     background: linear-gradient(90deg, #ff7a00 0%, #f1c14e 80%);
     border: 1px solid rgba(0, 0, 0, 0.4);
     box-shadow: 0 14px 30px -18px rgba(255, 140, 0, 0.8);
     color: #2b1600;
   }
 
-  .hotwheels-launch {
+  .minigarage-launch {
     background: linear-gradient(90deg, #ff6a00 0%, #ffb347 70%);
     border: 1px solid rgba(0, 0, 0, 0.35);
     box-shadow: 0 16px 30px -18px rgba(255, 120, 0, 0.9), 0 0 20px rgba(255, 120, 0, 0.35);
   }
 
-  .hotwheels-launch-wrap {
+  .minigarage-launch-wrap {
     position: relative;
     width: 380px;
     max-width: 100%;
     padding: 6px 0;
   }
 
-  .hotwheels-launch-back {
+  .minigarage-launch-back {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -154,13 +225,13 @@ body {
     pointer-events: none;
   }
 
-  .hotwheels-launch-back--glow {
+  .minigarage-launch-back--glow {
     opacity: 0.45;
     filter: blur(6px) saturate(1.4);
     transform: translate(-50%, -50%) scale(1.12);
   }
 
-  .hotwheels-launch-button {
+  .minigarage-launch-button {
     position: relative;
     z-index: 2;
     display: flex;
@@ -179,29 +250,56 @@ body {
     letter-spacing: 0.35em;
     text-transform: uppercase;
     transition: transform 180ms ease, box-shadow 180ms ease;
+    overflow: hidden;
   }
 
-  .hotwheels-launch-button:hover {
+  .minigarage-launch-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 20px 36px -18px rgba(255, 120, 0, 0.9), 0 0 28px rgba(255, 120, 0, 0.45);
   }
 
-  .hotwheels-launch-button:disabled {
+  .minigarage-launch-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 
-  .hotwheels-launch-icon {
+  .minigarage-launch-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.5) 45%, transparent 70%);
+    animation: button-shimmer 4.2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .minigarage-launch-button::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 210, 150, 0.4);
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 240ms ease, transform 240ms ease;
+    pointer-events: none;
+  }
+
+  .minigarage-launch-button:hover::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .minigarage-launch-icon {
     height: 22px;
     width: 22px;
     filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
   }
 
-  .hotwheels-launch-text {
+  .minigarage-launch-text {
     text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   }
 
-  .hotwheels-launch-stripes {
+  .minigarage-launch-stripes {
     position: absolute;
     right: 18px;
     height: 12px;
@@ -212,14 +310,14 @@ body {
         rgba(72, 32, 0, 0.65) 8px 16px);
   }
 
-  .hotwheels-carousel {
+  .minigarage-carousel {
     position: relative;
     margin-top: 16px;
     height: 240px;
     perspective: 900px;
   }
 
-  .hotwheels-card {
+  .minigarage-card {
     position: absolute;
     left: 50%;
     top: 0;
@@ -234,7 +332,7 @@ body {
     transition: transform 300ms ease, opacity 300ms ease;
   }
 
-  .hotwheels-card-media {
+  .minigarage-card-media {
     height: 120px;
     border-radius: 16px;
     background: radial-gradient(circle at top, rgba(255, 170, 70, 0.18), rgba(0, 0, 0, 0.25));
@@ -244,54 +342,54 @@ body {
     overflow: hidden;
   }
 
-  .hotwheels-card-img {
+  .minigarage-card-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.5));
   }
 
-  .hotwheels-card-body {
+  .minigarage-card-body {
     margin-top: 12px;
   }
 
-  .hotwheels-card-name {
+  .minigarage-card-name {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     color: #ffcf8a;
   }
 
-  .hotwheels-card-perk {
+  .minigarage-card-perk {
     margin-top: 6px;
     font-size: 12px;
     color: rgba(255, 255, 255, 0.65);
   }
 
-  .hotwheels-dots {
+  .minigarage-dots {
     display: inline-flex;
     gap: 6px;
   }
 
-  .hotwheels-dot {
+  .minigarage-dot {
     width: 6px;
     height: 6px;
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.25);
   }
 
-  .hotwheels-dot.is-active {
+  .minigarage-dot.is-active {
     background: #ffb347;
     box-shadow: 0 0 10px rgba(255, 180, 90, 0.8);
   }
 
-  .hotwheels-title {
+  .minigarage-title {
     color: #ffb04a;
     text-shadow: 0 0 12px rgba(255, 153, 58, 0.6);
     font-family: var(--font-accent);
   }
 
-  .hotwheels-form-title {
+  .minigarage-form-title {
     font-family: "Tektur", "Segoe UI", sans-serif;
     font-weight: 500;
     font-size: 24px;
@@ -302,7 +400,7 @@ body {
     text-shadow: 0 0 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 140, 0, 0.35);
   }
 
-  .hotwheels-tagline {
+  .minigarage-tagline {
     background: linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(255, 210, 140, 0.75));
     -webkit-background-clip: text;
     background-clip: text;
@@ -311,33 +409,33 @@ body {
     text-shadow: 0 0 12px rgba(0, 0, 0, 0.55);
   }
 
-  .hotwheels-cta-label {
+  .minigarage-cta-label {
     font-family: "Tektur", "Segoe UI", sans-serif;
     font-weight: 700;
     color: #5a2a00;
   }
 
-  .hotwheels-stripes {
+  .minigarage-stripes {
     background-image: repeating-linear-gradient(135deg,
         rgba(255, 189, 78, 0.9) 0 10px,
         rgba(72, 32, 0, 0.55) 10px 20px);
   }
 
-  .hotwheels-divider {
+  .minigarage-divider {
     display: flex;
     align-items: center;
     gap: 8px;
     justify-content: center;
   }
 
-  .hotwheels-divider-core {
+  .minigarage-divider-core {
     height: 4px;
     width: 130px;
     border-radius: 999px;
     background: linear-gradient(90deg, #b31212, #ff7a00);
   }
 
-  .hotwheels-divider-stripes {
+  .minigarage-divider-stripes {
     height: 8px;
     width: 70px;
     border-radius: 999px;
@@ -354,6 +452,19 @@ body {
 
   .animate-rise {
     animation: rise 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    transition: opacity 600ms ease, transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
   .glass {
@@ -447,6 +558,29 @@ body {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .minigarage-hero-bg,
+  .minigarage-hero-grid,
+  .minigarage-hero-glow {
+    transition: none;
+    transform: none;
+  }
+
+  .minigarage-logo-float {
+    animation: none;
+  }
+
+  .minigarage-launch-button::before {
+    animation: none;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Latar belakang kartu mobil sesuai Figma */
 .bg-orange-gradient {
   background: linear-gradient(to bottom, #FF8C00 0%, #FFA500 40%, #FFFFFF 100%);
@@ -463,7 +597,7 @@ body {
 }
 
 
-.hotwheels-gradient-text {
+.minigarage-gradient-text {
   background: linear-gradient(to bottom, #FFD147 0%, #FF8C05 50%, #E54200 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

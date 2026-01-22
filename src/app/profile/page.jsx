@@ -172,8 +172,8 @@ export default function ProfilePage() {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src="/assets/icons/logo2.png"
-              alt="Hot Wheels"
+              src="/assets/iconApp/MiniGarageIconTransparant.png"
+              alt="MiniGarage"
               className="h-24 sm:h-28 object-contain drop-shadow-2xl"
             />
           </div>

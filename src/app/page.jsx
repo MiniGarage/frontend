@@ -1,18 +1,18 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 const background =
   "/assets/backgrounds/view-car-running-high-speed%20%282%29.jpg";
-const logo = "/assets/icons/logo2.png";
+const logo = "/assets/iconApp/MiniGarageIconTransparant.png";
 const launchButton = "/assets/images/1.png";
 const fireIcon = "/assets/icons/fire.png";
 
-// Hot Wheels Car Collection
-const hotWheelsCarsTop = [
+// Die-Cast Car Collection
+const diecastCarsTop = [
   { name: "Blaze Runner", image: "/assets/car/Blaze Runner.png" },
   { name: "Turbo Phantom", image: "/assets/car/Turbo Phantom.png" },
   { name: "Chrome Viper", image: "/assets/car/Chrome Viper.png" },
@@ -20,7 +20,7 @@ const hotWheelsCarsTop = [
   { name: "Neon Drifter", image: "/assets/car/Neon Drifter.png" },
 ];
 
-const hotWheelsCarsBottom = [
+const diecastCarsBottom = [
   { name: "Speed Demon", image: "/assets/car/Speed Demon.png" },
   { name: "Purple Light", image: "/assets/car/purple light.png" },
   { name: "Thunder Bolt", image: "/assets/car/Thunder Bolt.png" },
@@ -57,6 +57,7 @@ export default function Home() {
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false);
   const [loginError, setLoginError] = useState(null);
+  const heroRef = useRef(null);
 
   // Show loading animation and redirect to dashboard if authenticated
   useEffect(() => {
@@ -64,6 +65,82 @@ export default function Home() {
       setShowLoading(true);
     }
   }, [ready, authenticated]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const elements = document.querySelectorAll("[data-reveal]");
+    if (!elements.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      elements.forEach((element) => element.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    let rafId = null;
+
+    const updatePosition = (event) => {
+      const rect = hero.getBoundingClientRect();
+      const clientX = event.clientX ?? rect.left + rect.width / 2;
+      const clientY = event.clientY ?? rect.top + rect.height / 2;
+      const x = (clientX - rect.left) / rect.width;
+      const y = (clientY - rect.top) / rect.height;
+      const offsetX = (x - 0.5) * 2;
+      const offsetY = (y - 0.5) * 2;
+
+      hero.style.setProperty("--parallax-x", offsetX.toFixed(3));
+      hero.style.setProperty("--parallax-y", offsetY.toFixed(3));
+    };
+
+    const handleMove = (event) => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        updatePosition(event);
+      });
+    };
+
+    const handleLeave = () => {
+      hero.style.setProperty("--parallax-x", "0");
+      hero.style.setProperty("--parallax-y", "0");
+    };
+
+    hero.addEventListener("pointermove", handleMove);
+    hero.addEventListener("pointerleave", handleLeave);
+
+    return () => {
+      hero.removeEventListener("pointermove", handleMove);
+      hero.removeEventListener("pointerleave", handleLeave);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, []);
 
   const handleLoadingComplete = () => {
     setShowLoading(false);
@@ -83,41 +160,63 @@ export default function Home() {
   return (
     <main className="relative overflow-x-hidden bg-black text-white">
       {/* SECTION 1: HERO */}
-      <section id="hero" className="section-full relative px-4 py-12 text-center sm:px-6 sm:py-16">
+      <section
+        id="hero"
+        ref={heroRef}
+        className="section-full minigarage-hero relative px-4 py-12 text-center sm:px-6 sm:py-16"
+      >
         <div className="absolute inset-0 z-0">
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0 minigarage-hero-bg bg-cover bg-center"
             style={{ backgroundImage: `url('${background}')` }}
           />
+          <div className="absolute inset-0 minigarage-hero-grid" aria-hidden="true" />
+          <div className="absolute inset-0 minigarage-hero-glow" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-4xl">
-          <div className="-mt-12 flex justify-center sm:-mt-16 md:-mt-20">
+          <div
+            className="-mt-12 flex justify-center sm:-mt-16 md:-mt-20"
+            data-reveal
+            style={{ "--reveal-delay": "0ms" }}
+          >
             <img
               src={logo}
-              alt="Base Wheels"
-              className="w-56 drop-shadow-[0_16px_40px_rgba(0,0,0,0.8)] sm:w-72 md:w-96"
+              alt="MiniGarage"
+              className="minigarage-logo-float w-56 drop-shadow-[0_16px_40px_rgba(0,0,0,0.8)] sm:w-72 md:w-96"
             />
           </div>
 
-          <h1 className="hotwheels-title hotwheels-gradient-text mt-[240px] mb-2 text-2xl font-black leading-tight sm:mt-[280px] sm:mb-3 sm:text-4xl md:mt-[320px] md:text-6xl">
+          <h1
+            className="minigarage-title minigarage-gradient-text mt-[240px] mb-2 text-2xl font-black leading-tight sm:mt-[280px] sm:mb-3 sm:text-4xl md:mt-[320px] md:text-6xl"
+            data-reveal
+            style={{ "--reveal-delay": "120ms" }}
+          >
             The Ultimate NFT Car Collection on Base
           </h1>
 
-          <p className="hotwheels-tagline mb-10 text-xs uppercase tracking-widest sm:mb-12 sm:text-base md:text-lg">
-            Collect. Build. Own Die-Cast Cars.
+          <p
+            className="minigarage-tagline mb-10 text-xs uppercase tracking-widest sm:mb-12 sm:text-base md:text-lg"
+            data-reveal
+            style={{ "--reveal-delay": "240ms" }}
+          >
+            Collect. Race. Dominate.
           </p>
 
-          <div className="hotwheels-launch-wrap mx-auto w-full max-w-[380px]">
+          <div
+            className="minigarage-launch-wrap mx-auto w-full max-w-[380px]"
+            data-reveal
+            style={{ "--reveal-delay": "360ms" }}
+          >
             <button
               type="button"
-              onClick={login}
+              onClick={handleLogin}
               disabled={!ready}
-              className="hotwheels-launch-button"
+              className="minigarage-launch-button"
             >
-              <img src={fireIcon} alt="Fire icon" className="hotwheels-launch-icon" />
-              <span className="hotwheels-launch-text">Launch App</span>
+              <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
+              <span className="minigarage-launch-text">Launch App</span>
             </button>
             {loginError && (
               <p className="mt-3 text-sm text-red-400 text-center" role="alert">
@@ -131,26 +230,39 @@ export default function Home() {
       {/* SECTION 2: ECOSYSTEM */}
       <section id="collection" className="section-full bg-gradient-to-b from-white to-gray-100 px-4 py-8 text-slate-900 sm:px-6 sm:py-16">
         <div className="mx-auto w-full">
-          <h2 className="mb-2 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl">
+          <h2
+            className="mb-2 text-center text-2xl font-bold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl"
+            data-reveal
+            style={{ "--reveal-delay": "0ms" }}
+          >
             A Collection That Works For Your Crypto Ecosystem
           </h2>
-          <p className="mx-auto mb-6 w-full break-words text-center text-base leading-snug text-slate-600 sm:max-w-2xl sm:mb-8 sm:text-lg md:text-xl">
-            Seamless integration across platforms. Collect premium Hot Wheels
-            quickly and transparently, making it easy to own collectibles in the
-            digital age.
+          <p
+            className="mx-auto mb-6 w-full break-words text-center text-base leading-snug text-slate-600 sm:max-w-2xl sm:mb-8 sm:text-lg md:text-xl"
+            data-reveal
+            style={{ "--reveal-delay": "120ms" }}
+          >
+            Seamless integration across platforms. Collect premium digital cars
+            quickly and transparently, making it easy to own rare collectibles in the
+            blockchain era.
           </p>
 
-          {/* Hot Wheels Carousel - TOP (Scrolls LEFT) */}
-          <div className="relative mb-4 overflow-hidden py-4 group" aria-label="Hot Wheels collection carousel scrolling left">
+          {/* Die-Cast Cars Carousel - TOP (Scrolls LEFT) */}
+          <div
+            className="relative mb-4 overflow-hidden py-4 group"
+            aria-label="Die-cast car collection carousel scrolling left"
+            data-reveal
+            style={{ "--reveal-delay": "220ms" }}
+          >
             <div
               className="flex animate-scroll-left group-hover:pause-animation gap-6 sm:gap-8"
               style={{ pointerEvents: "none" }}
             >
               {[
-                ...hotWheelsCarsTop,
-                ...hotWheelsCarsTop,
-                ...hotWheelsCarsTop,
-                ...hotWheelsCarsTop,
+                ...diecastCarsTop,
+                ...diecastCarsTop,
+                ...diecastCarsTop,
+                ...diecastCarsTop,
               ].map((car, index) => (
                 <div
                   key={index}
@@ -182,17 +294,22 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Hot Wheels Carousel - BOTTOM (Scrolls RIGHT) */}
-          <div className="relative mb-4 overflow-hidden py-4 group" aria-label="Hot Wheels collection carousel scrolling right">
+          {/* Die-Cast Cars Carousel - BOTTOM (Scrolls RIGHT) */}
+          <div
+            className="relative mb-4 overflow-hidden py-4 group"
+            aria-label="Die-cast car collection carousel scrolling right"
+            data-reveal
+            style={{ "--reveal-delay": "320ms" }}
+          >
             <div
               className="flex animate-scroll-right group-hover:pause-animation gap-6 sm:gap-8"
               style={{ pointerEvents: "none" }}
             >
               {[
-                ...hotWheelsCarsBottom,
-                ...hotWheelsCarsBottom,
-                ...hotWheelsCarsBottom,
-                ...hotWheelsCarsBottom,
+                ...diecastCarsBottom,
+                ...diecastCarsBottom,
+                ...diecastCarsBottom,
+                ...diecastCarsBottom,
               ].map((car, index) => (
                 <div
                   key={index}
@@ -228,10 +345,18 @@ export default function Home() {
       {/* SECTION 3: HOW IT WORKS */}
       <section id="features" className="section-full bg-gradient-to-b from-gray-900 to-black px-4 py-12 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
-          <h2 className="hotwheels-title hotwheels-gradient-text mb-3 text-center text-2xl font-black sm:mb-4 sm:text-3xl md:text-5xl">
-            How Base Wheels Works
+          <h2
+            className="minigarage-title minigarage-gradient-text mb-3 text-center text-2xl font-black sm:mb-4 sm:text-3xl md:text-5xl"
+            data-reveal
+            style={{ "--reveal-delay": "0ms" }}
+          >
+            How MiniGarage Works
           </h2>
-          <p className="mx-auto mb-10 max-w-2xl text-center text-sm text-gray-300 sm:mb-16 sm:text-base md:text-lg">
+          <p
+            className="mx-auto mb-10 max-w-2xl text-center text-sm text-gray-300 sm:mb-16 sm:text-base md:text-lg"
+            data-reveal
+            style={{ "--reveal-delay": "120ms" }}
+          >
             Blockchain-powered collecting makes NFT ownership easy, secure, and
             transparent.
           </p>
@@ -240,7 +365,9 @@ export default function Home() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="hotwheels-panel group rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 sm:p-6"
+                className="minigarage-panel group rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20 sm:p-6"
+                data-reveal
+                style={{ "--reveal-delay": `${180 + index * 120}ms` }}
               >
                 <div className="mb-3 flex justify-center sm:mb-4">
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 p-3 shadow-lg sm:h-20 sm:w-20 sm:p-4">
@@ -266,24 +393,36 @@ export default function Home() {
       {/* SECTION 4: FINAL CTA */}
       <section id="cta" className="section-full bg-gradient-to-b from-slate-100 to-white px-4 py-12 text-slate-900 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-4 text-3xl font-black text-slate-900 sm:mb-6 sm:text-4xl md:text-6xl">
-            Ready to Own Digital Hot Wheels? 🏎️🔥
+          <h2
+            className="mb-4 text-3xl font-black text-slate-900 sm:mb-6 sm:text-4xl md:text-6xl"
+            data-reveal
+            style={{ "--reveal-delay": "0ms" }}
+          >
+            Ready to Build Your Collection? 🏎️
           </h2>
-          <p className="mb-8 text-base text-slate-600 sm:mb-10 sm:text-lg md:text-xl">
-            Collect legendary cars as NFTs on Base blockchain. Each car is
+          <p
+            className="mb-8 text-base text-slate-600 sm:mb-10 sm:text-lg md:text-xl"
+            data-reveal
+            style={{ "--reveal-delay": "120ms" }}
+          >
+            Collect legendary racing machines as NFTs on Base blockchain. Each car is
             unique, tradeable, and exclusively yours.
           </p>
 
-          <div className="hotwheels-launch-wrap mx-auto max-w-sm sm:max-w-md">
+          <div
+            className="minigarage-launch-wrap mx-auto max-w-sm sm:max-w-md"
+            data-reveal
+            style={{ "--reveal-delay": "240ms" }}
+          >
             <button
               type="button"
               onClick={handleLogin}
               disabled={!ready}
-              className="hotwheels-launch-button"
-              aria-label="Launch Base Wheels App"
+              className="minigarage-launch-button"
+              aria-label="Launch MiniGarage App"
             >
-              <img src={fireIcon} alt="Fire icon" className="hotwheels-launch-icon" />
-              <span className="hotwheels-launch-text">Launch App</span>
+              <img src={fireIcon} alt="Fire icon" className="minigarage-launch-icon" />
+              <span className="minigarage-launch-text">Launch App</span>
             </button>
             {loginError && (
               <p className="mt-3 text-sm text-red-400 text-center" role="alert">
@@ -292,7 +431,11 @@ export default function Home() {
             )}
           </div>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-6">
+          <div
+            className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-6"
+            data-reveal
+            style={{ "--reveal-delay": "360ms" }}
+          >
             <a
               href="#"
               className="text-xs text-slate-500 transition-colors hover:text-orange-500 sm:text-sm"

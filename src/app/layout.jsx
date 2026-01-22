@@ -2,9 +2,9 @@
 import Providers from "./providers";
 
 export const metadata = {
-  title: "Base Wheels - NFT Car Collection",
-  description: "Collect, build, and own real toy cars as NFTs on Base blockchain. The ultimate Hot Wheels digital collection.",
-  applicationName: "Base Wheels",
+  title: "MiniGarage - NFT Car Collection on Base",
+  description: "Collect, race, and own digital collectible cars as NFTs on Base blockchain. Your personal garage of legendary racing machines.",
+  applicationName: "MiniGarage",
   manifest: "/manifest.webmanifest",
   themeColor: "#ff7a00",
   viewport: {
@@ -14,7 +14,7 @@ export const metadata = {
     userScalable: true,
   },
   icons: {
-    icon: "/icons/icon.svg",
+    icon: "/icons/icon-512.png",
   },
 };
 

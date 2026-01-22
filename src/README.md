@@ -1,6 +1,6 @@
 # Frontend Structure Documentation
 
-Dokumentasi struktur folder aplikasi Hot Wheels NFT Collection.
+Dokumentasi struktur folder aplikasi MiniGarage NFT Collection.
 
 ## 📁 Struktur Folder
 

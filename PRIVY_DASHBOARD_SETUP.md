@@ -55,7 +55,7 @@ Kalau app ID `cmjxyscmx03pulf0cadbpdmvq` bukan punya Anda atau belum di-configur
 
 1. **Go to:** https://dashboard.privy.io
 2. **Click "Create App"**
-3. **Name:** Base Wheels (atau nama lain)
+3. **Name:** MiniGarage (atau nama lain)
 4. **Select:** Web3 Wallet
 5. **Click "Create"**
 

@@ -13,6 +13,23 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env
+
+# PWA/service worker artifacts
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+
+# Coverage / cache
+coverage
+.eslintcache
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
