@@ -24,6 +24,10 @@ export default function Dashboard() {
   const [currentCarIndex, setCurrentCarIndex] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [supplyData, setSupplyData] = useState([]);
+  const [userStats, setUserStats] = useState({
+    totalCars: 0,
+    totalFragments: 0
+  });
 
   // Rare pool showcase cars
   const showcaseCars = [
@@ -63,16 +67,33 @@ export default function Dashboard() {
     }
   }, [ready, authenticated, router]);
 
-  // Fetch MockIDRX balance
+  // Fetch MockIDRX balance and user stats
   const fetchMockIDRXBalance = useCallback(async () => {
     try {
       setLoadingMockIDRX(true);
       const authToken = await getAccessToken();
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
+
+      // Fetch overview for balance and cars
+      const overviewResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/overview`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      const data = await response.json();
-      setMockIDRXBalance(data.user?.mockIDRX || 0);
+      const overviewData = await overviewResponse.json();
+      setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
+
+      // Fetch fragments for available (unused) fragments count
+      const fragmentsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/fragments`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const fragmentsData = await fragmentsResponse.json();
+
+      // Calculate total available fragments (unused only)
+      const availableFragments = fragmentsData.inventory?.reduce((sum, brand) => sum + brand.totalParts, 0) || 0;
+
+      // Update user stats with available fragments and total cars
+      setUserStats({
+        totalFragments: availableFragments,
+        totalCars: overviewData.stats?.totalCars || 0
+      });
     } catch (error) {
       console.error("Failed to fetch MockIDRX balance:", error);
     } finally {
@@ -115,15 +136,20 @@ export default function Dashboard() {
     }
   }, [getAccessToken]);
 
-  // Fetch recent activity (mock for now)
-  const fetchRecentActivity = useCallback(() => {
-    const mockActivity = [
-      { id: 1, user: "User8@@", action: "minted a Hypercar", time: "2m ago", avatar: "🏎️" },
-      { id: 2, user: "CryptoRacer", action: "assembled Economy", time: "5m ago", avatar: "🚗" },
-      { id: 3, user: "NFTCollector", action: "listed Sport NFT", time: "8m ago", avatar: "💰" },
-    ];
-    setRecentActivity(mockActivity);
-  }, []);
+  // Fetch recent activity from backend
+  const fetchRecentActivity = useCallback(async () => {
+    try {
+      const authToken = await getAccessToken();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/activity/recent`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      const data = await response.json();
+      setRecentActivity(data.activities || []);
+    } catch (error) {
+      console.error("Failed to fetch recent activity:", error);
+      setRecentActivity([]);
+    }
+  }, [getAccessToken]);
 
   useEffect(() => {
     if (authenticated) {
@@ -231,18 +257,14 @@ export default function Dashboard() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
-              <p className="text-gray-400 text-xs font-bold mb-1">CARS</p>
-              <p className="text-white text-2xl font-black">{stats.totalCars}</p>
+              <p className="text-gray-400 text-xs font-bold mb-1">MY FRAGMENTS</p>
+              <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
             </div>
             <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
-              <p className="text-gray-400 text-xs font-bold mb-1">USERS</p>
-              <p className="text-white text-2xl font-black">{stats.totalUsers}</p>
-            </div>
-            <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
-              <p className="text-yellow-400 text-xs font-bold mb-1">ECONOMY</p>
-              <p className="text-white text-2xl font-black">{stats.popularSeries.count}</p>
+              <p className="text-yellow-400 text-xs font-bold mb-1">MY NFTs</p>
+              <p className="text-white text-2xl font-black">{userStats.totalCars}</p>
             </div>
           </div>
 
