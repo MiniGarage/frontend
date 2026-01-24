@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import { Wallet, Bell, Car, Flame, Lock, Circle } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
 import { useWallet } from "@/hooks/useWallet";
@@ -262,8 +263,8 @@ export default function Dashboard() {
               onClick={fetchMockIDRXBalance}
               className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg hover:scale-105 transition-transform"
             >
-              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
-                💰
+              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
               </div>
               <span className="font-black text-sm text-orange-900">
                 {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance).toLocaleString()}
@@ -273,9 +274,9 @@ export default function Dashboard() {
 
             {/* User Info Badge */}
             {(userInfo.username || userInfo.email || walletAddress) && (
-              <div className="bg-green-500/20 border-2 border-green-500 rounded-full px-3 py-1.5 flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-green-400 text-xs font-bold">
+              <div className="bg-emerald-500 border-2 border-emerald-400 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-lg">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="text-white text-xs font-bold">
                   {userInfo.username || (userInfo.email ? userInfo.email.split('@')[0] : null) || `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
                 </span>
               </div>
@@ -283,7 +284,7 @@ export default function Dashboard() {
 
             {/* Notification Icon */}
             <button className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-              <span className="text-white text-lg">🔔</span>
+              <Bell size={18} className="text-white" strokeWidth={2} />
             </button>
           </div>
         </header>
@@ -303,12 +304,13 @@ export default function Dashboard() {
                   <p className="text-yellow-400 text-sm font-bold">
                     NFTs
                   </p>
-                  <p className="text-orange-400 text-xs mt-2">
-                    🔥 Last hour: <span className="font-bold">{stats.lastHourMinted}</span>
+                  <p className="text-orange-400 text-xs mt-2 flex items-center gap-1">
+                    <Flame size={14} className="text-orange-400" fill="currentColor" />
+                    <span>Last hour: <span className="font-bold">{stats.lastHourMinted}</span></span>
                   </p>
                 </div>
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-3xl">
-                  🚗
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                  <Car size={32} className="text-white" strokeWidth={2} />
                 </div>
               </div>
             </div>
@@ -341,25 +343,25 @@ export default function Dashboard() {
                     bg: "bg-gradient-to-br from-gray-700 to-gray-800",
                     text: "text-gray-300",
                     bar: "bg-gray-500",
-                    indicator: "🟢"
+                    indicatorColor: "text-gray-400"
                   },
                   Sport: {
                     bg: "bg-gradient-to-br from-blue-900 to-blue-950",
                     text: "text-blue-400",
                     bar: "bg-blue-500",
-                    indicator: "🔵"
+                    indicatorColor: "text-blue-400"
                   },
                   Supercar: {
                     bg: "bg-gradient-to-br from-purple-900 to-purple-950",
                     text: "text-purple-400",
                     bar: "bg-purple-500",
-                    indicator: "🟣"
+                    indicatorColor: "text-purple-400"
                   },
                   Hypercar: {
                     bg: "bg-gradient-to-br from-yellow-900 to-orange-950",
                     text: "text-yellow-400",
                     bar: "bg-yellow-500",
-                    indicator: "🟡"
+                    indicatorColor: "text-yellow-400"
                   }
                 };
 
@@ -373,10 +375,10 @@ export default function Dashboard() {
                         {tier.series.toUpperCase()}
                       </span>
                       {tier.soldOut && (
-                        <span className="text-xs">🔒</span>
+                        <Lock size={12} className="text-gray-400" />
                       )}
                       {tier.almostSoldOut && !tier.soldOut && (
-                        <span className="text-xs">{config.indicator}</span>
+                        <Circle size={10} className={config.indicatorColor} fill="currentColor" />
                       )}
                     </div>
 

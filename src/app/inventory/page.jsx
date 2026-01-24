@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import {
+  Car, Wallet, CircleDot, Settings, Paintbrush, Armchair,
+  Flame, Wrench, PartyPopper, Frown, AlertTriangle,
+  DollarSign, Clock, Package, Box
+} from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
@@ -15,23 +20,28 @@ const rarityColorMap = {
   legendary: "from-yellow-500 to-orange-500",
 };
 
-// Fragment type icons
-const fragmentIcons = {
-  0: "🚗", // Chassis
-  1: "🛞", // Wheels
-  2: "⚙️", // Engine
-  3: "🎨", // Body
-  4: "💺", // Interior
+// Fragment type icons mapping
+const fragmentIconsMap = {
+  0: { Icon: Car, label: "Chassis" },
+  1: { Icon: CircleDot, label: "Wheels" },
+  2: { Icon: Settings, label: "Engine" },
+  3: { Icon: Paintbrush, label: "Body" },
+  4: { Icon: Armchair, label: "Interior" },
 };
 
 export default function InventoryPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
   const router = useRouter();
-  useWallet(); // Keep hook for context
+  const { walletAddress } = useWallet();
 
   const [mockIDRXBalance, setMockIDRXBalance] = useState(0);
   const [loadingMockIDRX, setLoadingMockIDRX] = useState(false);
   const [showNetworkModal, setShowNetworkModal] = useState(false);
+  const [userInfo, setUserInfo] = useState({
+    username: null,
+    email: null,
+    usernameSet: false
+  });
 
   // Cars state
   const [selectedFilter, setSelectedFilter] = useState("semua");
@@ -89,6 +99,11 @@ export default function InventoryPage() {
       });
       const data = await response.json();
       setMockIDRXBalance(data.user?.mockIDRX || 0);
+      setUserInfo({
+        username: data.user?.username || null,
+        email: data.user?.email || null,
+        usernameSet: data.user?.usernameSet || false
+      });
     } catch (error) {
       console.error("Failed to fetch MockIDRX balance:", error);
       setMockIDRXBalance(0);
@@ -453,7 +468,7 @@ export default function InventoryPage() {
       <div className="relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24">
         {/* Header */}
         <header className="px-4 pt-3 pb-4">
-          <div className="flex items-center justify-end gap-2 mb-4">
+          <div className="flex items-center justify-between gap-2 mb-4">
             {/* MockIDRX Balance Badge */}
             <button
               type="button"
@@ -462,14 +477,24 @@ export default function InventoryPage() {
               aria-label="Refresh IDRX balance"
               title="Tap to refresh balance"
             >
-              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
-                💰
+              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
               </div>
               <span className="font-black text-sm text-orange-900">
                 {loadingMockIDRX ? "..." : Math.floor(mockIDRXBalance).toLocaleString()}
               </span>
               <span className="text-xs font-bold text-orange-900 opacity-80">IDRX</span>
             </button>
+
+            {/* User Info Badge */}
+            {(userInfo.username || userInfo.email || walletAddress) && (
+              <div className="bg-emerald-500 border-2 border-emerald-400 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-lg">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="text-white text-xs font-bold">
+                  {userInfo.username || (userInfo.email ? userInfo.email.split('@')[0] : null) || `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Title */}
@@ -479,23 +504,25 @@ export default function InventoryPage() {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setActiveTab("cars")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 ${
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
                 activeTab === "cars"
                   ? "bg-white text-orange-600 shadow-lg"
                   : "bg-orange-600/50 text-white hover:bg-orange-600/70"
               }`}
             >
-              🚗 Cars ({inventoryData.length})
+              <Car size={16} strokeWidth={2.5} />
+              Cars ({inventoryData.length})
             </button>
             <button
               onClick={() => setActiveTab("fragments")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 ${
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${
                 activeTab === "fragments"
                   ? "bg-white text-orange-600 shadow-lg"
                   : "bg-orange-600/50 text-white hover:bg-orange-600/70"
               }`}
             >
-              🧩 Fragments ({fragmentsData.reduce((sum, b) => sum + b.totalParts, 0)})
+              <Box size={16} strokeWidth={2.5} />
+              Fragments ({fragmentsData.reduce((sum, b) => sum + b.totalParts, 0)})
             </button>
           </div>
 
@@ -578,9 +605,10 @@ export default function InventoryPage() {
                       {!car.isRedeemed ? (
                         <button
                           onClick={() => handleClaimPhysical(car)}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all"
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1"
                         >
-                          🔥 CLAIM PHYSICAL
+                          <Flame size={12} className="text-white" fill="currentColor" />
+                          CLAIM PHYSICAL
                         </button>
                       ) : (
                         <div className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] text-center">
@@ -651,7 +679,7 @@ export default function InventoryPage() {
                         {[0, 1, 2, 3, 4].map((typeId) => {
                           const fragment = brandData.fragments.find(f => f.typeId === typeId);
                           const hasFragment = fragment && fragment.count > 0;
-                          const typeNames = ["Chassis", "Wheels", "Engine", "Body", "Interior"];
+                          const { Icon, label } = fragmentIconsMap[typeId];
 
                           return (
                             <div
@@ -662,11 +690,9 @@ export default function InventoryPage() {
                                   : "bg-black/30 opacity-70"
                               }`}
                             >
-                              <span className="text-2xl mb-1">
-                                {fragmentIcons[typeId]}
-                              </span>
+                              <Icon size={20} className="text-white mb-1" strokeWidth={2.5} />
                               <span className="text-[8px] font-bold text-white/80">
-                                {typeNames[typeId]}
+                                {label}
                               </span>
                               {hasFragment && (
                                 <span className="text-[10px] font-black text-yellow-300">
@@ -688,9 +714,16 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleAssemble(brandData.brand)}
                           disabled={assembling}
-                          className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:from-gray-400 disabled:to-gray-500 text-orange-900 font-black py-3 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all inventory-assemble"
+                          className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 disabled:from-gray-400 disabled:to-gray-500 text-orange-900 font-black py-3 rounded-full shadow-lg transform hover:scale-105 active:scale-95 transition-all inventory-assemble flex items-center justify-center gap-2"
                         >
-                          {assembling ? "Assembling..." : `🔧 Assemble ${brandData.brand}`}
+                          {assembling ? (
+                            "Assembling..."
+                          ) : (
+                            <>
+                              <Wrench size={18} strokeWidth={2.5} />
+                              Assemble {brandData.brand}
+                            </>
+                          )}
                         </button>
                       )}
                     </div>
@@ -717,8 +750,12 @@ export default function InventoryPage() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
             <div className={`bg-gradient-to-br ${assemblyResult.success ? "from-green-500 to-emerald-600" : "from-red-500 to-red-600"} rounded-3xl p-6 max-w-sm w-full shadow-2xl`}>
               <div className="text-center">
-                <div className="text-6xl mb-4">
-                  {assemblyResult.success ? "🎉" : "😔"}
+                <div className="mb-4 flex justify-center">
+                  {assemblyResult.success ? (
+                    <PartyPopper size={64} className="text-white" strokeWidth={1.5} />
+                  ) : (
+                    <Frown size={64} className="text-white" strokeWidth={1.5} />
+                  )}
                 </div>
                 <h3 className="text-2xl font-black text-white mb-2">
                   {assemblyResult.success ? "Assembly Success!" : "Assembly Failed"}
@@ -763,7 +800,9 @@ export default function InventoryPage() {
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
             {/* Header */}
             <div className="text-center mb-6">
-              <div className="text-6xl mb-3">⚠️</div>
+              <div className="mb-3 flex justify-center">
+                <AlertTriangle size={64} className="text-white" strokeWidth={1.5} />
+              </div>
               <h2 className="text-2xl font-black text-white mb-2">
                 Series Sold Out!
               </h2>
@@ -800,7 +839,11 @@ export default function InventoryPage() {
                   } ${processingOption ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="text-3xl">{option.type === "refund" ? "💰" : "⏳"}</div>
+                    {option.type === "refund" ? (
+                      <DollarSign size={32} className="text-white" strokeWidth={2} />
+                    ) : (
+                      <Clock size={32} className="text-white" strokeWidth={2} />
+                    )}
                     <div className="flex-1">
                       <h3 className="font-black text-white text-lg mb-1">
                         {option.title}
@@ -845,7 +888,9 @@ export default function InventoryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
             <div className="text-center mb-6">
-              <div className="text-6xl mb-3">📦</div>
+              <div className="mb-3 flex justify-center">
+                <Package size={64} className="text-white" strokeWidth={1.5} />
+              </div>
               <h2 className="text-2xl font-black text-white mb-2">
                 Shipping Information
               </h2>
@@ -923,7 +968,9 @@ export default function InventoryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
             <div className="text-center mb-6">
-              <div className="text-6xl mb-3">⚠️</div>
+              <div className="mb-3 flex justify-center">
+                <AlertTriangle size={64} className="text-white" strokeWidth={1.5} />
+              </div>
               <h2 className="text-2xl font-black text-white mb-2">
                 Confirm Redemption
               </h2>
@@ -967,9 +1014,14 @@ export default function InventoryPage() {
               <button
                 onClick={handleConfirmRedeem}
                 disabled={redeeming}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black py-3 rounded-xl shadow-lg disabled:opacity-50"
+                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-black py-3 rounded-xl shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {redeeming ? "Processing..." : "🔥 BURN & CLAIM"}
+                {redeeming ? "Processing..." : (
+                  <>
+                    <Flame size={18} className="text-white" fill="currentColor" />
+                    BURN & CLAIM
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -981,8 +1033,12 @@ export default function InventoryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <div className={`bg-gradient-to-br ${redeemResult.success ? "from-green-500 to-emerald-600" : "from-red-500 to-red-600"} rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400`}>
             <div className="text-center">
-              <div className="text-6xl mb-4">
-                {redeemResult.success ? "🎉" : "😔"}
+              <div className="mb-4 flex justify-center">
+                {redeemResult.success ? (
+                  <PartyPopper size={64} className="text-white" strokeWidth={1.5} />
+                ) : (
+                  <Frown size={64} className="text-white" strokeWidth={1.5} />
+                )}
               </div>
               <h2 className="text-2xl font-black text-white mb-2">
                 {redeemResult.success ? "Redemption Successful!" : "Redemption Failed"}

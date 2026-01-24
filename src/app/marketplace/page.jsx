@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
+import {
+  Wallet, Tag, Search, List, Sparkles, Gem,
+  ShoppingBag, PartyPopper, Frown, X, CheckCircle
+} from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
@@ -468,8 +472,8 @@ export default function MarketplacePage() {
           <div className="flex items-center justify-between gap-2 mb-4">
             {/* MockIDRX Balance Badge */}
             <div className="flex items-center gap-1.5 bg-yellow-400 rounded-full px-3 py-1.5 shadow-lg">
-              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center text-yellow-300 font-black text-xs">
-                💰
+              <div className="w-6 h-6 bg-orange-600 rounded-full flex items-center justify-center">
+                <Wallet size={14} className="text-yellow-300" strokeWidth={3} />
               </div>
               <span className="font-black text-sm text-orange-900">
                 {Math.floor(mockIDRXBalance).toLocaleString()}
@@ -487,29 +491,34 @@ export default function MarketplacePage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl font-black text-white mb-4">🛒 Marketplace</h1>
+          <h1 className="text-4xl font-black text-white mb-4 flex items-center gap-3">
+            <ShoppingBag size={36} strokeWidth={2.5} />
+            Marketplace
+          </h1>
 
           {/* Tab Switcher */}
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setActiveTab("browse")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all ${
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                 activeTab === "browse"
                   ? "bg-white text-orange-600 shadow-lg"
                   : "bg-orange-600/50 text-white hover:bg-orange-600/70"
               }`}
             >
-              🔍 Browse
+              <Search size={16} strokeWidth={2.5} />
+              Browse
             </button>
             <button
               onClick={() => setActiveTab("my-listings")}
-              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all ${
+              className={`flex-1 py-3 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-2 ${
                 activeTab === "my-listings"
                   ? "bg-white text-orange-600 shadow-lg"
                   : "bg-orange-600/50 text-white hover:bg-orange-600/70"
               }`}
             >
-              📋 My Listings
+              <List size={16} strokeWidth={2.5} />
+              My Listings
             </button>
           </div>
 
@@ -537,33 +546,36 @@ export default function MarketplacePage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setSortBy("newest")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs ${
+                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
                     sortBy === "newest"
                       ? "bg-white text-orange-600"
                       : "bg-orange-600/50 text-white"
                   }`}
                 >
-                  🆕 Newest
+                  <Sparkles size={12} strokeWidth={2.5} />
+                  Newest
                 </button>
                 <button
                   onClick={() => setSortBy("price_asc")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs ${
+                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
                     sortBy === "price_asc"
                       ? "bg-white text-orange-600"
                       : "bg-orange-600/50 text-white"
                   }`}
                 >
-                  💰 Low → High
+                  <Wallet size={12} strokeWidth={2.5} />
+                  Low → High
                 </button>
                 <button
                   onClick={() => setSortBy("price_desc")}
-                  className={`px-4 py-2 rounded-full font-bold text-xs ${
+                  className={`px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1 ${
                     sortBy === "price_desc"
                       ? "bg-white text-orange-600"
                       : "bg-orange-600/50 text-white"
                   }`}
                 >
-                  💎 High → Low
+                  <Gem size={12} strokeWidth={2.5} />
+                  High → Low
                 </button>
               </div>
             </div>
@@ -922,7 +934,9 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
         )}
         {step === "success" && (
           <div className="text-center">
-            <div className="text-6xl mb-4">🎉</div>
+            <div className="mb-4 flex justify-center">
+              <PartyPopper size={64} className="text-white" strokeWidth={1.5} />
+            </div>
             <h3 className="text-2xl font-black text-white mb-2">Purchase Complete!</h3>
             <p className="text-white/80 text-sm mb-4">
               The NFT is now yours. Check your inventory!
@@ -947,7 +961,9 @@ function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove })
         )}
         {step === "error" && (
           <div className="text-center">
-            <div className="text-6xl mb-4">😞</div>
+            <div className="mb-4 flex justify-center">
+              <Frown size={64} className="text-white" strokeWidth={1.5} />
+            </div>
             <h3 className="text-2xl font-black text-white mb-2">Purchase Failed</h3>
             <p className="text-white/80 text-sm mb-4">{error}</p>
             <button
@@ -1100,7 +1116,9 @@ function SellModal({
         )}
         {step === "success" && (
           <div className="text-center">
-            <div className="text-6xl mb-4">✅</div>
+            <div className="mb-4 flex justify-center">
+              <CheckCircle size={64} className="text-white" strokeWidth={1.5} />
+            </div>
             <h3 className="text-2xl font-black text-white mb-2">Listed Successfully!</h3>
             <p className="text-white/80 text-sm mb-4">
               Your NFT is now on the marketplace!
@@ -1115,7 +1133,9 @@ function SellModal({
         )}
         {step === "error" && (
           <div className="text-center">
-            <div className="text-6xl mb-4">❌</div>
+            <div className="mb-4 flex justify-center">
+              <X size={64} className="text-white" strokeWidth={1.5} />
+            </div>
             <h3 className="text-2xl font-black text-white mb-2">Listing Failed</h3>
             <p className="text-white/80 text-sm mb-4">{error}</p>
             <button
@@ -1147,9 +1167,9 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
           <h3 className="text-2xl font-black text-white">NFT Details</h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white font-bold"
+            className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
           >
-            ✕
+            <X size={18} className="text-white" strokeWidth={2.5} />
           </button>
         </div>
 
