@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
+import ShippingInfoModal from "@/components/ShippingInfoModal";
 
 export default function ProfilePage() {
   const { authenticated, ready, user, logout, getAccessToken } = usePrivy();
@@ -23,6 +24,12 @@ export default function ProfilePage() {
     username: null,
     email: null,
     usernameSet: false
+  });
+  const [showShippingModal, setShowShippingModal] = useState(false);
+  const [shippingInfo, setShippingInfo] = useState({
+    shippingName: null,
+    shippingPhone: null,
+    shippingAddress: null
   });
 
   // Redirect if not authenticated
@@ -84,6 +91,13 @@ export default function ProfilePage() {
         username: data.user?.username || null,
         email: data.user?.email || null,
         usernameSet: data.user?.usernameSet || false
+      });
+
+      // Store shipping info
+      setShippingInfo({
+        shippingName: data.user?.shippingName || null,
+        shippingPhone: data.user?.shippingPhone || null,
+        shippingAddress: data.user?.shippingAddress || null
       });
     } catch (error) {
       console.error("Failed to fetch MockIDRX balance:", error);
@@ -244,7 +258,7 @@ export default function ProfilePage() {
       icon: "ℹ️",
       title: "Information",
       subtitle: "Your Information",
-      onClick: () => handleComingSoon("Your Information Comming soon")
+      onClick: () => setShowShippingModal(true)
     },
     {
       id: "terms",
@@ -410,6 +424,13 @@ export default function ProfilePage() {
         onNetworkChanged={() => {
           fetchBalance();
         }}
+      />
+
+      {/* Shipping Information Modal */}
+      <ShippingInfoModal
+        isOpen={showShippingModal}
+        onClose={() => setShowShippingModal(false)}
+        shippingInfo={shippingInfo}
       />
     </main>
   );

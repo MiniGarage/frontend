@@ -282,11 +282,11 @@ export default function InventoryPage() {
     }
   }, [authenticated]);
 
-  // Filter inventory based on selected filter
+  // Filter inventory based on selected filter and exclude redeemed cars
   const filteredInventory = selectedFilter === "semua"
-    ? inventoryData
+    ? inventoryData.filter((car) => !car.isRedeemed)
     : inventoryData.filter(
-        (car) => car.rarity?.toLowerCase() === selectedFilter.toLowerCase()
+        (car) => car.rarity?.toLowerCase() === selectedFilter.toLowerCase() && !car.isRedeemed
       );
 
   // Handle assembly
