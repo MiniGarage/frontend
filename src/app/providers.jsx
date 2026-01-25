@@ -3,9 +3,16 @@
 import { PrivyProvider } from "@privy-io/react-auth";
 import { base, baseSepolia, mainnet } from "viem/chains";
 import { Toaster } from "sonner";
+import { sdk } from "@farcaster/miniapp-sdk";
+import { useEffect } from "react";
 
 export default function Providers({ children }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID || "cmjxyscmx03pulf0cadbpdmvq";
+
+  // Initialize MiniApp SDK
+  useEffect(() => {
+    sdk.actions.ready();
+  }, []);
 
   return (
     <>

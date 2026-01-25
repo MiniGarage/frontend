@@ -1,22 +1,42 @@
 ﻿import "./globals.css";
 import Providers from "./providers";
 
-export const metadata = {
-  title: "MiniGarage - NFT Car Collection on Base",
-  description: "Collect, race, and own digital collectible cars as NFTs on Base blockchain. Your personal garage of legendary racing machines.",
-  applicationName: "MiniGarage",
-  manifest: "/manifest.webmanifest",
-  themeColor: "#ff7a00",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-  icons: {
-    icon: "/icons/icon-512.png",
-  },
-};
+export async function generateMetadata() {
+  const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+
+  return {
+    title: "MiniGarage - NFT Car Collection on Base",
+    description: "Collect, race, and own digital collectible cars as NFTs on Base blockchain. Your personal garage of legendary racing machines.",
+    applicationName: "MiniGarage",
+    manifest: "/manifest.webmanifest",
+    themeColor: "#ff7a00",
+    viewport: {
+      width: "device-width",
+      initialScale: 1,
+      maximumScale: 5,
+      userScalable: true,
+    },
+    icons: {
+      icon: "/icons/icon-512.png",
+    },
+    other: {
+      "fc:miniapp": JSON.stringify({
+        version: "next",
+        imageUrl: `${URL}/icons/icon-512.png`,
+        button: {
+          title: "Launch MiniGarage",
+          action: {
+            type: "launch_miniapp",
+            name: "MiniGarage",
+            url: URL,
+            splashImageUrl: `${URL}/icons/icon-512.png`,
+            splashBackgroundColor: "#ff7a00",
+          },
+        },
+      }),
+    },
+  };
+}
 
 export default function RootLayout({ children }) {
   return (
