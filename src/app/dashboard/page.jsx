@@ -8,7 +8,7 @@ import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
 import { useWallet } from "@/hooks/useWallet";
 import { PullToRefresh } from "@/components/shared";
-import { checkFaucetCooldown, formatCooldownTime } from "@/lib/mockidrx";
+import { checkFaucetCooldown, formatCooldownTime, getMockIDRXBalance, claimFaucet } from "@/lib/mockidrx";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -48,6 +48,8 @@ export default function Dashboard() {
   const [showUsernameModal, setShowUsernameModal] = useState(false);
   const [faucetCooldown, setFaucetCooldown] = useState(0);
   const [claimingFaucet, setClaimingFaucet] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const [loadingActivity, setLoadingActivity] = useState(false);
 
   // Rare pool showcase cars
   const showcaseCars = [
@@ -91,6 +93,7 @@ export default function Dashboard() {
   const fetchMockIDRXBalance = useCallback(async () => {
     try {
       setLoadingMockIDRX(true);
+      setFetchError(null);
       const authToken = await getAccessToken();
 
       // Fetch overview for balance and cars
@@ -98,21 +101,39 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       const overviewData = await overviewResponse.json();
-      setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
+
+      // Get balance from blockchain (real-time) if wallet is available
+      if (embeddedWallet && walletAddress) {
+        try {
+          const blockchainBalance = await getMockIDRXBalance(embeddedWallet, walletAddress);
+          setMockIDRXBalance(blockchainBalance);
+        } catch (error) {
+          console.error("Failed to fetch blockchain balance:", error);
+          // Fallback to backend balance
+          setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
+        }
+      } else {
+        // Use backend balance if wallet not ready
+        setMockIDRXBalance(overviewData.user?.mockIDRX || 0);
+      }
 
       // Store user info (email/username)
-      const userData = {
-        email: overviewData.user?.email || null,
-        username: overviewData.user?.username || null,
-        walletAddress: overviewData.user?.walletAddress || null,
-        usernameSet: overviewData.user?.usernameSet || false
-      };
-      setUserInfo(userData);
+      setUserInfo(prev => {
+        const userData = {
+          email: overviewData.user?.email || null,
+          username: overviewData.user?.username || null,
+          walletAddress: overviewData.user?.walletAddress || null,
+          // Preserve usernameSet if already true (prevent overwriting)
+          usernameSet: prev?.usernameSet || overviewData.user?.usernameSet || false
+        };
 
-      // Show username modal if username not set
-      if (!userData.usernameSet) {
-        setShowUsernameModal(true);
-      }
+        // Show username modal if username not set and modal not already shown
+        if (!userData.usernameSet && !showUsernameModal) {
+          setShowUsernameModal(true);
+        }
+
+        return userData;
+      });
 
       // Fetch fragments for available (unused) fragments count
       const fragmentsResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/garage/fragments`, {
@@ -130,10 +151,12 @@ export default function Dashboard() {
       });
     } catch (error) {
       console.error("Failed to fetch MockIDRX balance:", error);
+      setFetchError(error.message || "Failed to load data");
+      toast.error("Failed to load balance. Please try again.");
     } finally {
       setLoadingMockIDRX(false);
     }
-  }, [getAccessToken]);
+  }, [getAccessToken, embeddedWallet, walletAddress]);
 
   // Fetch dashboard stats
   const fetchStats = useCallback(async () => {
@@ -173,6 +196,7 @@ export default function Dashboard() {
   // Fetch recent activity from backend
   const fetchRecentActivity = useCallback(async () => {
     try {
+      setLoadingActivity(true);
       const authToken = await getAccessToken();
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/activity/recent`, {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -182,6 +206,8 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Failed to fetch recent activity:", error);
       setRecentActivity([]);
+    } finally {
+      setLoadingActivity(false);
     }
   }, [getAccessToken]);
 
@@ -213,8 +239,7 @@ export default function Dashboard() {
 
       setShowUsernameModal(false);
 
-      // Refresh data from backend to ensure sync
-      await fetchMockIDRXBalance();
+      // No need to refresh - we already have the updated user data from the response
     } catch (error) {
       console.error('Set username error:', error);
       throw error;
@@ -233,10 +258,15 @@ export default function Dashboard() {
     }
   }, [walletAddress, embeddedWallet]);
 
-  // Handle claim faucet
+  // Handle claim faucet (gasless via backend)
   const handleClaimFaucet = async () => {
     if (faucetCooldown > 0) {
       toast.error(`Cooldown active! Wait ${formatCooldownTime(faucetCooldown)}`);
+      return;
+    }
+
+    if (!embeddedWallet) {
+      toast.error("Wallet not connected");
       return;
     }
 
@@ -252,6 +282,14 @@ export default function Dashboard() {
         },
       });
 
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        throw new Error('Backend returned an error. Please check if the backend is running correctly.');
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
@@ -260,8 +298,9 @@ export default function Dashboard() {
 
       toast.success("Faucet claimed successfully! +1,000,000 IDRX");
 
-      // Refresh balance
-      await fetchMockIDRXBalance();
+      // Refresh balance directly from blockchain
+      const newBalance = await getMockIDRXBalance(embeddedWallet, walletAddress);
+      setMockIDRXBalance(newBalance);
 
       // Check cooldown again
       await checkCooldown();
@@ -290,6 +329,16 @@ export default function Dashboard() {
       return () => clearInterval(interval);
     }
   }, [authenticated, fetchMockIDRXBalance, fetchStats, fetchRecentActivity, checkCooldown]);
+
+  // Countdown faucet cooldown timer
+  useEffect(() => {
+    if (faucetCooldown > 0) {
+      const interval = setInterval(() => {
+        setFaucetCooldown(prev => Math.max(0, prev - 1));
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [faucetCooldown]);
 
   // Auto-rotate showcase cars
   useEffect(() => {
@@ -370,6 +419,30 @@ export default function Dashboard() {
       {/* Main Content */}
       <PullToRefresh onRefresh={handleRefresh}>
         <div className={`relative z-10 flex flex-col min-h-screen max-w-md mx-auto pb-24 ${showUsernameModal ? 'blur-sm pointer-events-none' : ''}`}>
+          {/* Error Banner */}
+          {fetchError && (
+            <div className="mx-4 mt-3 mb-2 bg-red-500/90 border-2 border-red-400 rounded-lg p-3 flex items-center justify-between animate-in slide-in-from-top">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">⚠️</span>
+                <span className="text-white text-sm font-bold">Connection issue</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRefresh}
+                  className="bg-white text-red-600 px-3 py-1 rounded text-xs font-bold hover:bg-red-50 transition-colors"
+                >
+                  Retry
+                </button>
+                <button
+                  onClick={() => setFetchError(null)}
+                  className="text-white hover:text-red-100 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Header */}
           <header className="px-4 pt-3 pb-4">
             {/* Top Row - Balance and Username */}
@@ -447,11 +520,19 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
                 <p className="text-gray-400 text-xs font-bold mb-1">MY FRAGMENTS</p>
-                <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
+                {loadingMockIDRX ? (
+                  <div className="h-8 bg-gray-700 rounded animate-pulse" />
+                ) : (
+                  <p className="text-white text-2xl font-black">{userStats.totalFragments}</p>
+                )}
               </div>
               <div className="bg-gray-900 rounded-xl p-4 shadow-lg">
                 <p className="text-yellow-400 text-xs font-bold mb-1">MY NFTs</p>
-                <p className="text-white text-2xl font-black">{userStats.totalCars}</p>
+                {loadingMockIDRX ? (
+                  <div className="h-8 bg-gray-700 rounded animate-pulse" />
+                ) : (
+                  <p className="text-white text-2xl font-black">{userStats.totalCars}</p>
+                )}
               </div>
             </div>
 
@@ -613,7 +694,18 @@ export default function Dashboard() {
               </div>
 
               <div className="max-h-[300px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 scroll-smooth" id="activity-feed-container">
-                {recentActivity.length > 0 ? (
+                {loadingActivity ? (
+                  // Loading skeleton
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="bg-gray-800/50 rounded-lg p-3 flex items-center gap-3 animate-pulse">
+                      <div className="w-8 h-8 bg-gray-700 rounded-full flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-gray-700 rounded w-3/4" />
+                        <div className="h-3 bg-gray-700 rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))
+                ) : recentActivity.length > 0 ? (
                   recentActivity.map((activity, index) => (
                     <div
                       key={activity.id}
