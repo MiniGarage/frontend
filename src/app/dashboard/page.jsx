@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Wallet, Car, Flame, Lock, Circle, Activity, BadgeCheck, Droplet } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import SetUsernameModal from "@/components/SetUsernameModal";
+import OnboardingTutorial from "@/components/OnboardingTutorial";
 import { useWallet } from "@/hooks/useWallet";
 import { PullToRefresh } from "@/components/shared";
 import { checkFaucetCooldown, formatCooldownTime, getMockIDRXBalance, claimFaucet } from "@/lib/mockidrx";
@@ -50,6 +51,25 @@ export default function Dashboard() {
   const [claimingFaucet, setClaimingFaucet] = useState(false);
   const [fetchError, setFetchError] = useState(null);
   const [loadingActivity, setLoadingActivity] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if user is first-time visitor
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial && authenticated && ready) {
+      // Small delay to let the dashboard load first
+      setTimeout(() => {
+        setShowOnboarding(true);
+      }, 1000);
+    }
+  }, [authenticated, ready]);
+
+  // Handle onboarding close
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    localStorage.setItem('hasSeenTutorial', 'true');
+    toast.success('Welcome to BaseWheels! 🎉');
+  };
 
   // Rare pool showcase cars
   const showcaseCars = [
@@ -762,6 +782,12 @@ export default function Dashboard() {
         isOpen={showUsernameModal}
         onClose={() => { }} // Cannot close - must set username
         onSubmit={handleSetUsername}
+      />
+
+      {/* Onboarding Tutorial */}
+      <OnboardingTutorial
+        isOpen={showOnboarding}
+        onClose={handleOnboardingClose}
       />
     </main>
   );

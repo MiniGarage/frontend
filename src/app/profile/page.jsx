@@ -7,12 +7,13 @@ import {
   Car, User, Twitter, MessageCircle, Mail, CreditCard,
   MapPin, Globe, Compass, MessageSquare, Info,
   FileText, Lock, ChevronRight, Wallet,
-  HistoryIcon
+  HistoryIcon, BookOpen
 } from "lucide-react";
 import BottomNavigation from "@/components/shared/BottomNavigation";
 import { useWallet } from "@/hooks/useWallet";
 import NetworkModal from "@/components/shared/NetworkModal";
 import ShippingInfoModal from "@/components/ShippingInfoModal";
+import OnboardingTutorial from "@/components/OnboardingTutorial";
 import { toast } from "sonner";
 
 
@@ -36,6 +37,28 @@ export default function ProfilePage() {
     shippingPhone: null,
     shippingAddress: null
   });
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Prevent closing logout modal with Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showLogoutConfirm) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    if (showLogoutConfirm) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showLogoutConfirm]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -105,8 +128,13 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await logout();
-    router.push("/");
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout");
+    }
   };
 
   if (!ready || !authenticated) {
@@ -247,6 +275,13 @@ export default function ProfilePage() {
       onClick: () => setShowShippingModal(true)
     },
     {
+      id: "tutorial",
+      Icon: BookOpen,
+      title: "View Tutorial",
+      subtitle: "Learn how to use the app",
+      onClick: () => setShowTutorial(true)
+    },
+    {
       id: "terms",
       Icon: FileText,
       title: "Terms and Conditions",
@@ -379,7 +414,7 @@ export default function ProfilePage() {
         {/* Logout Button */}
         <div className="px-6 py-6">
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutConfirm(true)}
             className="w-full bg-red-600 hover:bg-red-700 text-white font-black text-lg py-4 rounded-full shadow-2xl transform hover:scale-105 transition-all duration-200 uppercase"
           >
             Log Out
@@ -422,6 +457,55 @@ export default function ProfilePage() {
             shippingAddress: updatedUser.shippingAddress
           });
         }}
+      />
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-gradient-to-br from-gray-900 via-red-900/20 to-gray-900 border-2 border-red-500 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            {/* Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center">
+                <span className="text-4xl">⚠️</span>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h2 className="text-2xl font-black text-white text-center mb-2">
+              Confirm Logout
+            </h2>
+
+            {/* Message */}
+            <p className="text-gray-300 text-center mb-6">
+              Are you sure you want to log out? You'll need to sign in again to access your account.
+            </p>
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  handleLogout();
+                }}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tutorial Modal */}
+      <OnboardingTutorial
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
       />
     </main>
   );
