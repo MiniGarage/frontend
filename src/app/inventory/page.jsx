@@ -114,19 +114,44 @@ export default function InventoryPage() {
 
       const data = await response.json();
 
-      const transformedCars = data.cars.map(car => ({
-        id: car.tokenId,
-        tokenId: car.tokenId,
-        name: car.modelName?.toUpperCase() || "UNKNOWN",
-        modelName: car.modelName || "Unknown",
-        series: car.series || "Unknown",
-        rarity: car.rarity || "common",
-        rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
-        image: `/assets/car/${car.modelName}.png`,
-        mintTxHash: car.mintTxHash,
-        isRedeemed: car.isRedeemed,
-      }));
+      // Fetch metadata for each car to get IPFS image URLs
+      const transformedCarsPromises = data.cars.map(async (car) => {
+        try {
+          // Fetch NFT metadata from backend
+          const metadataResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/metadata/cars/${car.tokenId}`);
+          const metadata = await metadataResponse.json();
 
+          return {
+            id: car.tokenId,
+            tokenId: car.tokenId,
+            name: car.modelName?.toUpperCase() || "UNKNOWN",
+            modelName: car.modelName || "Unknown",
+            series: car.series || "Unknown",
+            rarity: car.rarity || "common",
+            rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
+            image: metadata.image || `/assets/car/${car.modelName}.png`, // Use IPFS image from metadata
+            mintTxHash: car.mintTxHash,
+            isRedeemed: car.isRedeemed,
+          };
+        } catch (error) {
+          console.error(`Failed to fetch metadata for token ${car.tokenId}:`, error);
+          // Fallback to local image if metadata fetch fails
+          return {
+            id: car.tokenId,
+            tokenId: car.tokenId,
+            name: car.modelName?.toUpperCase() || "UNKNOWN",
+            modelName: car.modelName || "Unknown",
+            series: car.series || "Unknown",
+            rarity: car.rarity || "common",
+            rarityColor: RARITY_CONFIG[car.rarity]?.gradient || "from-gray-500 to-gray-600",
+            image: `/assets/car/${car.modelName}.png`,
+            mintTxHash: car.mintTxHash,
+            isRedeemed: car.isRedeemed,
+          };
+        }
+      });
+
+      const transformedCars = await Promise.all(transformedCarsPromises);
       setInventoryData(transformedCars);
     } catch (error) {
       console.error("Failed to fetch inventory:", error);
