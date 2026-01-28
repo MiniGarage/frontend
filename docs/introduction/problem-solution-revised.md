@@ -2,7 +2,7 @@
 
 ## 🚨 The Problem
 
-Traditional digital collectibles and in-game assets have **three critical flaws** that prevent true ownership and long-term value:
+Traditional digital collectibles and in-game assets have **four critical flaws** that prevent true ownership and long-term value:
 
 ### 1. No True Ownership
 
@@ -24,7 +24,26 @@ Traditional digital collectibles and in-game assets have **three critical flaws*
 
 ---
 
-### 3. Lack of Gaming Collectibles on Base
+### 3. No Fair & Transparent Supply Control for RWA
+
+Most gacha systems suffer from:
+- **Infinite minting** - Companies can create unlimited items
+- **Unclear odds** - Real drop rates hidden from players
+- **No guarantee that assets truly run out** - "Limited edition" items keep appearing
+
+This creates:
+- **Distrust** - Players lose faith in rarity claims
+- **Over-supply** - Market floods with "rare" items
+- **Broken economies** - Value collapses from infinite supply
+
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Traditional Gacha</strong></td><td>Even if items are "rare", they can be minted endlessly. Companies control supply without transparency.</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>Minting is <strong>hard-capped</strong> by real-world asset supply. If only 1,000 cars exist physically, only 1,000 NFTs can ever exist. Fully transparent on-chain.</td></tr></tbody></table>
+
+**Example:**
+> Company claims "Only 500 Legendary Swords available!" in gacha game. Players spend $10,000 total trying to get them. Company secretly mints 200 more because sales are good. **Result:** Original buyers feel scammed, value drops, economy breaks.
+
+---
+
+### 4. Lack of Gaming Collectibles on Base
 
 <table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>❌ Current State</strong></td><td>Base has amazing DeFi and social apps, but lacks engaging collectible gaming experiences that bridge Web2 and Web3.</td></tr><tr><td><strong>✅ MiniGarage</strong></td><td>First major NFT car collection game on Base, combining mainstream appeal with blockchain benefits.</td></tr></tbody></table>
 
