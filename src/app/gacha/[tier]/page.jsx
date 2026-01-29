@@ -401,17 +401,17 @@ export default function GachaTierPage() {
           </div>
         )}
 
-        {/* Content Area */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-6">
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-y-auto px-4 pb-6">
           {!hasSpun && !showAnimation ? (
             /* Before Spin Screen */
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm mx-auto py-4">
               {/* Car Preview */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <img
                   src="/assets/car/High Speed.png"
                   alt="Mystery Car"
-                  className={`w-full h-64 object-contain drop-shadow-2xl transition-all duration-300 ${isSpinning ? "animate-spin" : ""
+                  className={`w-full h-48 object-contain drop-shadow-2xl transition-all duration-300 ${isSpinning ? "animate-spin" : ""
                     }`}
                   style={{
                     filter: isSpinning ? "blur(8px)" : "none",
@@ -421,38 +421,38 @@ export default function GachaTierPage() {
               </div>
 
               {/* Info Box */}
-              <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="text-3xl">🚗</div>
-                  <p className="text-sm text-gray-300 leading-relaxed">
+              <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 mb-4">
+                <div className="flex items-start gap-2">
+                  <div className="text-2xl">🚗</div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
                     {config.description}
                   </p>
                 </div>
               </div>
 
               {/* Cost Display */}
-              <div className="text-center mb-4">
-                <p className="text-orange-400 font-bold text-sm mb-2">COST</p>
+              <div className="text-center mb-3">
+                <p className="text-orange-400 font-bold text-xs mb-1.5">COST</p>
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Wallet size={24} className="text-orange-600" strokeWidth={2.5} />
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Wallet size={20} className="text-orange-600" strokeWidth={2.5} />
                   </div>
-                  <span className="text-6xl font-black text-orange-400">
+                  <span className="text-5xl font-black text-orange-400">
                     {currentBox?.costCoins.toLocaleString() || 0}
                   </span>
-                  <span className="text-2xl font-bold text-orange-400 opacity-80">IDRX</span>
+                  <span className="text-xl font-bold text-orange-400 opacity-80">IDRX</span>
                 </div>
               </div>
 
               {/* Slide to Open */}
-              <div className="relative mt-4">
-                <p className="text-center text-orange-400 font-bold text-lg tracking-wider mb-3">
+              <div className="relative mt-3">
+                <p className="text-center text-orange-400 font-bold text-base tracking-wider mb-2">
                   {isSlideReady ? "BOOST READY" : "SLIDE TO OPEN"}
                 </p>
 
                 {/* Slider Track */}
                 <div
-                  className={`relative h-16 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 rounded-full overflow-hidden shadow-xl gacha-track ${isSlideReady ? "gacha-track-ready" : ""}`}
+                  className={`relative h-14 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 rounded-full overflow-hidden shadow-xl gacha-track ${isSlideReady ? "gacha-track-ready" : ""}`}
                 >
                   <div className="gacha-track-fill" style={{ width: `${progressPercent}%` }} />
                   <div
@@ -517,7 +517,7 @@ export default function GachaTierPage() {
             </div>
           ) : (
             /* After Spin - Result Screen */
-            <div className="w-full max-w-sm text-center relative overflow-hidden">
+            <div className="w-full max-w-sm mx-auto text-center relative overflow-hidden py-4">
               <div className="gacha-reward-glow" aria-hidden="true" />
               <div className="gacha-confetti" aria-hidden="true">
                 {Array.from({ length: 14 }).map((_, index) => (
@@ -532,16 +532,16 @@ export default function GachaTierPage() {
                 ))}
               </div>
               {/* Congratulations Text */}
-              <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent uppercase animate-pulse">
+              <h2 className="text-2xl font-black mb-4 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent uppercase animate-pulse">
                 Congratulations<br />You Got
               </h2>
 
               {/* Reward Car */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <img
                   src={reward?.image}
                   alt={reward?.name}
-                  className="w-full h-64 object-contain drop-shadow-2xl animate-bounce"
+                  className="w-full h-48 object-contain drop-shadow-2xl animate-bounce"
                 />
               </div>
 

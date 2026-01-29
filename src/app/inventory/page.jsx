@@ -977,7 +977,7 @@ export default function InventoryPage() {
       {/* Sold Out Modal */}
       {showSoldOutModal && soldOutData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto">
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400 my-8 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="mb-3 flex justify-center">
