@@ -119,8 +119,8 @@ export default function ShippingInfoModal({ isOpen, onClose, shippingInfo, onUpd
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-gradient-to-br from-gray-900 via-orange-900/20 to-gray-900 border-2 border-orange-500 rounded-2xl p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-gradient-to-br from-gray-900 via-orange-900/20 to-gray-900 border-2 border-orange-500 rounded-2xl p-6 max-w-md w-full shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="text-6xl mb-4">📦</div>

@@ -64,7 +64,7 @@ export const FRAGMENT_ICONS = {
 };
 
 // Inventory filter options
-export const INVENTORY_FILTERS = ["All", "Common", "Rare", "Epic", "Legendary"];
+export const INVENTORY_FILTERS = ["all", "legendary", "epic", "rare", "common"];
 
 // Cooldown period in seconds (24 hours)
 export const COOLDOWN_PERIOD = 86400;

@@ -2,8 +2,8 @@
 import Providers from "./providers";
 
 export async function generateMetadata() {
-  const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
-
+  const URL = process.env.NEXT_PUBLIC_URL || "https://minigarageapp.vercel.app";
+  
   return {
     title: "MiniGarage - NFT Car Collection on Base",
     description: "Collect, race, and own digital collectible cars as NFTs on Base blockchain. Your personal garage of legendary racing machines.",

@@ -9,6 +9,9 @@ import { getGachaBoxes, openGachaBox, getRarityConfig } from "@/lib/gachaApi";
 import { payForSpin, ensureServerWalletApproval } from "@/lib/mockidrx";
 import { toast } from "sonner";
 import GachaRoulette from "@/components/GachaRoulette";
+import { validateNetwork, formatBlockchainError } from "@/utils/blockchain";
+import ProgressSteps from "@/components/shared/ProgressSteps";
+import ErrorBanner from "@/components/shared/ErrorBanner";
 
 export default function GachaTierPage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -22,6 +25,7 @@ export default function GachaTierPage() {
   const [reward, setReward] = useState(null);
   const [slideProgress, setSlideProgress] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [spinProgress, setSpinProgress] = useState(1);
 
   // Dummy assets for the reel
   // Helper to map name to image
@@ -192,7 +196,10 @@ export default function GachaTierPage() {
 
     setIsSpinning(true);
     setErrorMessage("");
+    setSpinProgress(1);
     isDraggingRef.current = false;
+
+    let paymentTxHash = null; // Track payment for potential refund
 
     try {
       // Get selected box cost
@@ -207,10 +214,18 @@ export default function GachaTierPage() {
 
       console.log("📦 Selected box:", selectedBox);
 
-      // Step 1: Get auth token
+      // Step 1: Validate network
+      const networkValidation = await validateNetwork(embeddedWallet);
+      if (!networkValidation.valid) {
+        throw new Error(networkValidation.error);
+      }
+
+      // Step 2: Get auth token
+      setSpinProgress(2);
       const authToken = await getAccessToken();
 
-      // Step 2: Ensure server wallet approval first
+      // Step 3: Ensure server wallet approval
+      setSpinProgress(3);
       console.log('🔍 Checking server wallet approval...');
       const approvalResult = await ensureServerWalletApproval(
         embeddedWallet,
@@ -227,7 +242,8 @@ export default function GachaTierPage() {
         toast.success("Server wallet approved! You can now use gasless transactions.");
       }
 
-      // Step 3: User pays for spin by transferring to treasury (GASLESS!)
+      // Step 4: User pays for spin
+      setSpinProgress(4);
       console.log(`💳 Paying ${selectedBox.costCoins} IDRX for spin (gasless)...`);
       const paymentResult = await payForSpin(embeddedWallet, selectedBox.costCoins, authToken);
 
@@ -235,10 +251,12 @@ export default function GachaTierPage() {
         throw new Error(paymentResult.error || "Failed to pay for spin");
       }
 
-      console.log("✅ Payment successful:", paymentResult.txHash);
+      paymentTxHash = paymentResult.txHash;
+      console.log("✅ Payment successful:", paymentTxHash);
 
-      // Step 4: Call backend API with payment TX hash for verification
-      const result = await openGachaBox(tierType, paymentResult.txHash, authToken);
+      // Step 5: Call backend API with payment TX hash for verification
+      setSpinProgress(5);
+      const result = await openGachaBox(tierType, paymentTxHash, authToken);
 
       // Map backend reward to frontend format
       const rarityConfig = getRarityConfig(result.reward.rarity);
@@ -276,13 +294,24 @@ export default function GachaTierPage() {
       setIsSpinning(false);
       setSlideProgress(0);
 
-      // Show error message
-      if (error.message.includes("Insufficient MockIDRX")) {
+      const errorMessage = formatBlockchainError(error);
+
+      // IMPORTANT: If payment succeeded but backend failed, notify user
+      if (paymentTxHash && (error.message.includes("mint") || error.message.includes("backend") || error.message.includes("server"))) {
+        setErrorMessage(
+          `Payment processed (TX: ${paymentTxHash.slice(0, 10)}...) but reward minting failed. ` +
+          `IMPORTANT: Contact support with this transaction hash if you were charged. ` +
+          `The system should automatically refund your IDRX if the mint failed.`
+        );
+        toast.error("Payment succeeded but reward failed. Check transaction or contact support for refund.", {
+          duration: 10000
+        });
+      } else if (error.message.includes("Insufficient MockIDRX") || error.message.includes("Insufficient balance")) {
         setErrorMessage("Insufficient MockIDRX tokens! You need more IDRX to open this box.");
         toast.error("Insufficient IDRX balance!");
       } else {
-        setErrorMessage(error.message || "Failed to open gacha box. Please try again.");
-        toast.error("Gacha failed. Please try again.");
+        setErrorMessage(errorMessage || "Failed to open gacha box. Please try again.");
+        toast.error(errorMessage);
       }
     }
   };
@@ -401,17 +430,17 @@ export default function GachaTierPage() {
           </div>
         )}
 
-        {/* Content Area */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-20">
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-y-auto px-4 pb-6">
           {!hasSpun && !showAnimation ? (
             /* Before Spin Screen */
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-sm mx-auto py-4">
               {/* Car Preview */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <img
                   src="/assets/car/High Speed.png"
                   alt="Mystery Car"
-                  className={`w-full h-64 object-contain drop-shadow-2xl transition-all duration-300 ${isSpinning ? "animate-spin" : ""
+                  className={`w-full h-48 object-contain drop-shadow-2xl transition-all duration-300 ${isSpinning ? "animate-spin" : ""
                     }`}
                   style={{
                     filter: isSpinning ? "blur(8px)" : "none",
@@ -421,38 +450,38 @@ export default function GachaTierPage() {
               </div>
 
               {/* Info Box */}
-              <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-4 mb-6">
-                <div className="flex items-start gap-3">
-                  <div className="text-3xl">🚗</div>
-                  <p className="text-sm text-gray-300 leading-relaxed">
+              <div className="bg-black/60 backdrop-blur-sm rounded-2xl p-3 mb-4">
+                <div className="flex items-start gap-2">
+                  <div className="text-2xl">🚗</div>
+                  <p className="text-xs text-gray-300 leading-relaxed">
                     {config.description}
                   </p>
                 </div>
               </div>
 
               {/* Cost Display */}
-              <div className="text-center mb-4">
-                <p className="text-orange-400 font-bold text-sm mb-2">COST</p>
+              <div className="text-center mb-3">
+                <p className="text-orange-400 font-bold text-xs mb-1.5">COST</p>
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                    <Wallet size={24} className="text-orange-600" strokeWidth={2.5} />
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Wallet size={20} className="text-orange-600" strokeWidth={2.5} />
                   </div>
-                  <span className="text-6xl font-black text-orange-400">
+                  <span className="text-5xl font-black text-orange-400">
                     {currentBox?.costCoins.toLocaleString() || 0}
                   </span>
-                  <span className="text-2xl font-bold text-orange-400 opacity-80">IDRX</span>
+                  <span className="text-xl font-bold text-orange-400 opacity-80">IDRX</span>
                 </div>
               </div>
 
               {/* Slide to Open */}
-              <div className="relative mt-8">
-                <p className="text-center text-orange-400 font-bold text-sm mb-2">
+              <div className="relative mt-3">
+                <p className="text-center text-orange-400 font-bold text-base tracking-wider mb-2">
                   {isSlideReady ? "BOOST READY" : "SLIDE TO OPEN"}
                 </p>
 
                 {/* Slider Track */}
                 <div
-                  className={`relative h-16 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 rounded-full overflow-hidden shadow-xl gacha-track ${isSlideReady ? "gacha-track-ready" : ""}`}
+                  className={`relative h-14 bg-gradient-to-r from-orange-600 via-orange-500 to-yellow-500 rounded-full overflow-hidden shadow-xl gacha-track ${isSlideReady ? "gacha-track-ready" : ""}`}
                 >
                   <div className="gacha-track-fill" style={{ width: `${progressPercent}%` }} />
                   <div
@@ -497,9 +526,19 @@ export default function GachaTierPage() {
               </div>
 
               {isSpinning && (
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl z-50">
-                  <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="text-orange-400 font-bold animate-pulse">PROCESSING PAYMENT...</p>
+                <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl z-50 p-6">
+                  <h3 className="text-2xl font-black text-orange-400 mb-6">Opening Gacha Box</h3>
+                  <ProgressSteps
+                    steps={[
+                      "Validating network",
+                      "Authenticating",
+                      "Checking approval",
+                      "Processing payment",
+                      "Minting reward"
+                    ]}
+                    currentStep={spinProgress}
+                    className="w-full max-w-xs"
+                  />
                 </div>
               )}
             </div>
@@ -517,7 +556,7 @@ export default function GachaTierPage() {
             </div>
           ) : (
             /* After Spin - Result Screen */
-            <div className="w-full max-w-sm text-center relative overflow-hidden">
+            <div className="w-full max-w-sm mx-auto text-center relative overflow-hidden py-4">
               <div className="gacha-reward-glow" aria-hidden="true" />
               <div className="gacha-confetti" aria-hidden="true">
                 {Array.from({ length: 14 }).map((_, index) => (
@@ -532,16 +571,16 @@ export default function GachaTierPage() {
                 ))}
               </div>
               {/* Congratulations Text */}
-              <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent uppercase animate-pulse">
+              <h2 className="text-2xl font-black mb-4 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent uppercase animate-pulse">
                 Congratulations<br />You Got
               </h2>
 
               {/* Reward Car */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <img
                   src={reward?.image}
                   alt={reward?.name}
-                  className="w-full h-64 object-contain drop-shadow-2xl animate-bounce"
+                  className="w-full h-48 object-contain drop-shadow-2xl animate-bounce"
                 />
               </div>
 

@@ -697,19 +697,19 @@ export default function InventoryPage() {
                         className="h-full"
                       >
                         <div
-                          className={`relative bg-gradient-to-br ${car.rarityColor} rounded-2xl p-3 shadow-xl transition-transform inventory-card animate-rise h-full`}
+                          className={`relative bg-gradient-to-br ${car.rarityColor} rounded-2xl p-4 shadow-xl transition-transform inventory-card animate-rise h-full flex flex-col`}
                           style={{ animationDelay: `${index * 60}ms` }}
                         >
                           {/* Rarity Badge */}
-                          <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
-                            <span className="text-white text-[10px] font-black uppercase">
+                          <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5 z-10">
+                            <span className="text-white text-xs font-black uppercase">
                               {car.rarity}
                             </span>
                           </div>
 
                           {/* Token ID Badge */}
-                          <div className="absolute top-2 right-10 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1 z-10">
-                            <span className="text-white text-[10px] font-bold">
+                          <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5 z-10">
+                            <span className="text-white text-xs font-bold">
                               #{car.tokenId}
                             </span>
                           </div>
@@ -727,25 +727,25 @@ export default function InventoryPage() {
                           </div>
 
                           {/* Car Info */}
-                          <div className="text-center px-1 mb-2">
-                            <p className="text-white text-xs font-black uppercase truncate">
+                          <div className="text-center px-1 mb-3 flex-1 flex flex-col justify-center">
+                            <p className="text-white text-sm font-black uppercase truncate mb-1">
                               {car.modelName}
                             </p>
-                            <p className="text-white/70 text-[10px] font-semibold truncate">
+                            <p className="text-white/70 text-xs font-semibold truncate">
                               {car.series}
                             </p>
                           </div>
 
                           {/* Action Buttons */}
                           {!car.isRedeemed ? (
-                            <div className="space-y-1.5">
+                            <div className="space-y-2">
                               {/* Sell to Admin Button */}
                               <button
                                 onClick={() => handleSellToAdmin(car)}
                                 disabled={activeListings.includes(car.tokenId)}
-                                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                               >
-                                <DollarSign size={12} className="text-white" />
+                                <DollarSign size={14} className="text-white" />
                                 SELL - {buybackPrices[car.rarity?.toLowerCase()]?.toLocaleString()} IDRX
                               </button>
 
@@ -753,23 +753,23 @@ export default function InventoryPage() {
                               {activeListings.includes(car.tokenId) ? (
                                 <button
                                   onClick={() => handleClaimPhysical(car)}
-                                  className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg cursor-not-allowed opacity-75 flex items-center justify-center gap-1"
+                                  className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow-lg cursor-not-allowed opacity-75 flex items-center justify-center gap-1.5"
                                 >
-                                  <Package size={12} className="text-white" />
+                                  <Package size={14} className="text-white" />
                                   UNABLE TO CLAIM
                                 </button>
                               ) : (
                                 <button
                                   onClick={() => handleClaimPhysical(car)}
-                                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2 px-3 rounded-lg text-[10px] shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1"
+                                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow-lg transform hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
                                 >
-                                  <Flame size={12} className="text-white" fill="currentColor" />
+                                  <Flame size={14} className="text-white" fill="currentColor" />
                                   CLAIM PHYSICAL
                                 </button>
                               )}
                             </div>
                           ) : (
-                            <div className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-2 px-3 rounded-lg text-[10px] text-center">
+                            <div className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-bold py-2.5 px-3 rounded-lg text-xs text-center shadow-lg">
                               ✅ REDEEMED
                             </div>
                           )}
@@ -926,8 +926,8 @@ export default function InventoryPage() {
 
           {/* Assembly Result Modal */}
           {assemblyResult && (
-            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-              <div className={`bg-gradient-to-br ${assemblyResult.success ? "from-green-500 to-emerald-600" : "from-red-500 to-red-600"} rounded-3xl p-6 max-w-sm w-full shadow-2xl`}>
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <div className={`bg-gradient-to-br ${assemblyResult.success ? "from-green-500 to-emerald-600" : "from-red-500 to-red-600"} rounded-3xl p-6 max-w-sm w-full shadow-2xl my-8`}>
                 <div className="text-center">
                   <div className="mb-4 flex justify-center">
                     {assemblyResult.success ? (
@@ -976,8 +976,8 @@ export default function InventoryPage() {
 
       {/* Sold Out Modal */}
       {showSoldOutModal && soldOutData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto">
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400 my-8 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="mb-3 flex justify-center">
@@ -1064,7 +1064,7 @@ export default function InventoryPage() {
 
       {/* Shipping Info Modal */}
       {showShippingModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto">
           <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
             <div className="text-center mb-6">
               <div className="mb-3 flex justify-center">
@@ -1144,7 +1144,7 @@ export default function InventoryPage() {
 
       {/* Redeem Confirmation Modal */}
       {showRedeemModal && selectedCar && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto">
           <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400">
             <div className="text-center mb-6">
               <div className="mb-3 flex justify-center">
@@ -1209,7 +1209,7 @@ export default function InventoryPage() {
 
       {/* Redeem Result Modal */}
       {redeemResult && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto">
           <div className={`bg-gradient-to-br ${redeemResult.success ? "from-green-500 to-emerald-600" : "from-red-500 to-red-600"} rounded-2xl shadow-2xl max-w-md w-full p-6 border-4 border-yellow-400`}>
             <div className="text-center">
               <div className="mb-4 flex justify-center">
@@ -1254,8 +1254,8 @@ export default function InventoryPage() {
 
       {/* Marketplace Listing Warning Modal */}
       {showListingWarning && selectedCar && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl my-8">
             <div className="text-center">
               <div className="mb-4 flex justify-center">
                 <AlertTriangle size={64} className="text-yellow-300" strokeWidth={1.5} />
