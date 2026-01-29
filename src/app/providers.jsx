@@ -41,24 +41,24 @@ export default function Providers({ children }) {
         }}
       />
       <PrivyProvider
-      appId={appId}
-      config={{
-        loginMethods: ["email", "wallet", "google", "twitter", "discord"],
-        appearance: {
-          theme: "light",
-          accentColor: "#ff7a59",
-        },
-        embeddedWallets: {
-          createOnLogin: "all-users", // Auto-create wallet for all users
-          requireUserPasswordOnCreate: false, // No password needed
-          noPromptOnSignature: true, // No popup for signing (smooth UX)
-        },
-        defaultChain: baseSepolia, // Base Sepolia testnet
-        supportedChains: [base, baseSepolia, mainnet], // Support Base mainnet, testnet, and Ethereum
-      }}
-    >
-      {children}
-    </PrivyProvider>
+        appId={appId}
+        config={{
+          loginMethods: ["email", "wallet", "farcaster"],
+          appearance: {
+            theme: "light",
+            accentColor: "#ff7a59",
+          },
+          embeddedWallets: {
+            createOnLogin: "all-users", // Auto-create wallet for all users
+            requireUserPasswordOnCreate: false, // No password needed
+            noPromptOnSignature: true, // No popup for signing (smooth UX)
+          },
+          defaultChain: baseSepolia, // Base Sepolia testnet
+          supportedChains: [base, baseSepolia, mainnet], // Support Base mainnet, testnet, and Ethereum
+        }}
+      >
+        {children}
+      </PrivyProvider>
     </ErrorBoundary>
   );
 }
