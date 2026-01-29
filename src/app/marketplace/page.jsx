@@ -13,6 +13,7 @@ import { BrowserProvider, Contract, parseUnits, formatUnits } from "ethers";
 import { toast } from "sonner";
 import { PullToRefresh } from "@/components/shared";
 import { RARITY_CONFIG } from "@/constants";
+import { getCarImagePath, handleImageError } from "@/utils/imageHelpers";
 
 export default function MarketplacePage() {
   const { authenticated, ready, getAccessToken } = usePrivy();
@@ -305,6 +306,16 @@ export default function MarketplacePage() {
     setSellPrice("");
     setSellCar(null);
     fetchMyCars();
+  };
+
+  const handleCloseSellModal = () => {
+    setShowSellModal(false);
+    setTimeout(() => {
+      setSellStep("select");
+      setSellError("");
+      setSellPrice("");
+      setSellCar(null);
+    }, 300);
   };
 
   const handleSellSelectCar = (car) => {
@@ -656,12 +667,10 @@ export default function MarketplacePage() {
                         {/* Car Image */}
                         <div className="aspect-square flex items-center justify-center mb-2">
                           <img
-                            src={`/assets/car/${listing.car.modelName}.png`}
+                            src={getCarImagePath(listing.car.modelName)}
                             alt={listing.car.modelName}
                             className="w-full h-full object-contain drop-shadow-2xl"
-                            onError={(e) => {
-                              e.target.src = "/assets/car/placeholder.png";
-                            }}
+                            onError={handleImageError}
                           />
                         </div>
 
@@ -811,7 +820,7 @@ export default function MarketplacePage() {
           price={sellPrice}
           error={sellError}
           cars={myCars}
-          onClose={() => setShowSellModal(false)}
+          onClose={handleCloseSellModal}
           onSelectCar={handleSellSelectCar}
           onSetPrice={(price) => setSellPrice(price)}
           onConfirmPrice={handleSellSetPrice}
@@ -866,12 +875,10 @@ function ListingCard({ listing, onCancel, onClick }) {
         {/* Car Image */}
         <div className="w-24 h-24 flex-shrink-0">
           <img
-            src={`/assets/car/${listing.car.modelName}.png`}
+            src={getCarImagePath(listing.car.modelName)}
             alt={listing.car.modelName}
             className="w-full h-full object-contain drop-shadow-xl"
-            onError={(e) => {
-              e.target.src = "/assets/car/placeholder.png";
-            }}
+            onError={handleImageError}
           />
         </div>
 
@@ -922,8 +929,8 @@ function ListingCard({ listing, onCancel, onClick }) {
 // Buy Modal Component
 function BuyModal({ listing, step, error, txHash, balance, onClose, onApprove }) {
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 animate-backdrop-in">
-      <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-modal-in">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto animate-backdrop-in">
+      <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl p-6 max-w-sm w-full shadow-2xl my-8 animate-modal-in">
         {step === "approve" && (
           <>
             <h3 className="text-2xl font-black text-white mb-4">Buy NFT</h3>
@@ -1056,7 +1063,7 @@ function SellModal({
                   >
                     <div className="flex gap-3 items-center">
                       <img
-                        src={`/assets/car/${c.modelName}.png`}
+                        src={getCarImagePath(c.modelName)}
                         alt={c.modelName}
                         className="w-16 h-16 object-contain"
                         onError={(e) => {
@@ -1205,10 +1212,10 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
   const canBuy = !isOwner && listing.status === "active" && balance >= listing.price;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 overflow-y-auto">
       <div
         className={`bg-gradient-to-br ${RARITY_CONFIG[listing.car.rarity] || "from-gray-500 to-gray-600"
-          } rounded-3xl p-6 max-w-sm w-full shadow-2xl`}
+          } rounded-3xl p-6 max-w-sm w-full shadow-2xl my-8`}
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-2xl font-black text-white">NFT Details</h3>
@@ -1223,12 +1230,10 @@ function DetailModal({ listing, balance, onClose, onBuy, onCancel }) {
         {/* Car Image */}
         <div className="bg-white/10 rounded-2xl p-6 mb-4">
           <img
-            src={`/assets/car/${listing.car.modelName}.png`}
+            src={getCarImagePath(listing.car.modelName)}
             alt={listing.car.modelName}
             className="w-full h-48 object-contain drop-shadow-2xl"
-            onError={(e) => {
-              e.target.src = "/assets/car/placeholder.png";
-            }}
+            onError={handleImageError}
           />
         </div>
 

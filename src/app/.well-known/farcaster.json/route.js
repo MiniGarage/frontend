@@ -5,14 +5,13 @@ function withValidProperties(properties) {
 }
 
 export async function GET() {
-  const URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const URL = process.env.NEXT_PUBLIC_URL || "https://minigarageapp.vercel.app";
 
   const manifest = {
     accountAssociation: {
-      // These will be added in step 5
-      header: "",
-      payload: "",
-      signature: ""
+      header: "eyJmaWQiOjI1MTk4NDgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg2NTk2OWVGMGFGQzk4RmQ4YzMxMDgxQ0NBNENkMDc1NUFGMTc2MjNCIn0",
+      payload: "eyJkb21haW4iOiJtaW5pZ2FyYWdlYXBwLnZlcmNlbC5hcHAifQ",
+      signature: "JSLffvo0IoMqfQZMz94lWJjNSOR2Hn3IO1Vb7Sb2jU8WHMNg7vCsBuqC7+JvcB5OH5yFDB+j764fxb/lAecSABs="
     },
     miniapp: {
       version: "1",
@@ -33,10 +32,10 @@ export async function GET() {
       tags: ["nft", "cars", "racing", "collectibles", "base"],
       heroImageUrl: `${URL}/icons/icon-512.png`,
       tagline: "Your digital car collection",
-      ogTitle: "MiniGarage - NFT Car Collection",
+      ogTitle: "MiniGarage - NFT Cars",
       ogDescription: "Collect, race, and own digital collectible cars as NFTs on Base blockchain",
       ogImageUrl: `${URL}/icons/icon-512.png`,
-      noindex: true // Set to true during testing, false when ready to publish
+      noindex: false
     }
   };
 

@@ -3,6 +3,7 @@
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { useEffect, useState, useRef } from "react";
 import { CHAIN_SYMBOLS, WALLET_CHECK_DELAY } from "@/constants";
+import { toast } from "sonner";
 
 /**
  * Custom hook for managing wallet connection with Privy
@@ -60,16 +61,20 @@ export function useWallet() {
       walletCheckTimeout.current = setTimeout(async () => {
         if (wallets.length === 0 && !createWalletAttempted.current) {
           createWalletAttempted.current = true;
+          toast.loading("Creating your wallet...", { id: "wallet-creation" });
 
           try {
             setIsConnecting(true);
             await createWallet();
+            toast.success("Wallet created successfully!", { id: "wallet-creation" });
           } catch (error) {
             if (error.message?.includes("already has an embedded wallet")) {
+              toast.dismiss("wallet-creation");
               setWalletError(null);
               createWalletAttempted.current = false;
             } else {
               console.error("Failed to create wallet:", error);
+              toast.error("Failed to create wallet. Please try again.", { id: "wallet-creation" });
               setWalletError(error.message || "Failed to create wallet");
             }
           } finally {

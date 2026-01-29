@@ -402,7 +402,7 @@ export default function GachaTierPage() {
         )}
 
         {/* Content Area */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-20">
+        <div className="flex-1 flex items-center justify-center px-4 pb-6">
           {!hasSpun && !showAnimation ? (
             /* Before Spin Screen */
             <div className="w-full max-w-sm">
@@ -445,8 +445,8 @@ export default function GachaTierPage() {
               </div>
 
               {/* Slide to Open */}
-              <div className="relative mt-8">
-                <p className="text-center text-orange-400 font-bold text-sm mb-2">
+              <div className="relative mt-4">
+                <p className="text-center text-orange-400 font-bold text-lg tracking-wider mb-3">
                   {isSlideReady ? "BOOST READY" : "SLIDE TO OPEN"}
                 </p>
 
