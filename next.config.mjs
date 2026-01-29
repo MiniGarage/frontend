@@ -9,8 +9,9 @@ const withPWA = nextPWA({
 
 const nextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
+  turbopack: {}, // Required for Next.js 16 with Turbopack
+  typescript: {
+    ignoreBuildErrors: false,
   },
 };
 
