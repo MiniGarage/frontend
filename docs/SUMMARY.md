@@ -28,12 +28,7 @@
 * [NFT Marketplace](core-features/nft-marketplace.md)
 * [Inventory Management](core-features/inventory-management.md)
 
-## 🛠️ For Developers
 
-* [Local Setup](for-developers/local-setup.md)
-* [Deploy Contracts](for-developers/deploy-contracts.md)
-* [API Reference](for-developers/api-reference.md)
-* [Contributing Guide](for-developers/contributing-guide.md)
 
 ## 📊 Project
 

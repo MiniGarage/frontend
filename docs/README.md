@@ -28,7 +28,7 @@ MiniGarage combines the **excitement of gacha mechanics** with the **security of
 
 ## ⚡ Quick Start
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>🎮 Try the Demo</strong></td><td>Experience MiniGarage live on Base Sepolia testnet</td><td><a href="getting-started/demo-and-links.md">demo-and-links.md</a></td></tr><tr><td><strong>🛠️ For Developers</strong></td><td>Set up locally and deploy your own instance</td><td><a href="project/local-setup.md">local-setup.md</a></td></tr><tr><td><strong>📚 Learn More</strong></td><td>Understand the problem we solve</td><td><a href="introduction/problem-solution.md">problem-solution.md</a></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>🎮 Try the Demo</strong></td><td>Experience MiniGarage live on Base Sepolia testnet</td><td><a href="getting-started/demo-and-links.md">demo-and-links.md</a></td></tr><tr><td><strong> Learn More</strong></td><td>Understand the problem we solve</td><td><a href="introduction/problem-solution.md">problem-solution.md</a></td></tr></tbody></table>
 
 ---
 
@@ -135,11 +135,7 @@ We plan to explore **Token Bound Accounts** to give each car its own unique iden
 
 ---
 
-## 👨‍💻 For Developers
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>🛠️ Local Setup</strong></td><td>Run MiniGarage locally</td><td><a href="project/local-setup.md">local-setup.md</a></td></tr><tr><td><strong>📜 Smart Contracts</strong></td><td>Contract architecture</td><td><a href="technical/smart-contracts.md">smart-contracts.md</a></td></tr><tr><td><strong>🏗️ Architecture</strong></td><td>System design overview</td><td><a href="technical/architecture.md">architecture.md</a></td></tr></tbody></table>
-
----
 
 ## 🌟 Why MiniGarage?
 
@@ -152,14 +148,7 @@ We plan to explore **Token Bound Accounts** to give each car its own unique iden
 | 💎 **Real Ownership** | Your NFTs, your wallet, forever |
 | 💰 **Free to Try** | 100K IDRX airdrop on signup |
 
-### For Developers
 
-| Benefit | Explanation |
-|---------|-------------|
-| 🧩 **Modular Design** | Clean separation: contracts, API, frontend |
-| 📚 **Well Documented** | Comprehensive guides and comments |
-| 🔧 **Modern Stack** | Next.js 15, React Server Components |
-| 🚀 **Production Ready** | Security focused, gas optimized |
 
 ---
 
