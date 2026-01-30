@@ -1,362 +1,190 @@
 # Key Features
 
-## 🎯 What Makes MiniGarage Special
+## 🎯 What Makes MiniGarage Unique
 
-MiniGarage combines the best of gaming, collecting, and blockchain to create a unique experience. Here are the features that set us apart.
+MiniGarage is a **Base Mini App** that combines gacha mechanics, NFT ownership, and real-world asset (RWA) scarcity into a single collectible experience.
+
+The platform is designed to be **easy to access**, **fair to play**, and **trustworthy to collect**.
 
 ---
 
-## 1. 🎰 Gacha System with Real Ownership
+## 1. 🎰 Gacha System with Real Ownership (Live on Testnet)
 
-### How It Works
+MiniGarage uses a gacha system where **every outcome results in on-chain ownership**.
 
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant F as Frontend
-    participant V as GachaVault
-    participant T as IDRX Token
+    participant A as Mini App
+    participant V as Gacha Contract
+    participant T as IDRX
     participant N as NFT Contracts
-    
-    U->>F: Click "Open Gacha"
-    F->>T: Check balance (25K IDRX)
-    T-->>F: Balance OK
-    F->>V: rollGacha()
-    V->>T: Burn 25K IDRX
-    V->>V: Calculate RNG
-    alt Full Car (20%)
-        V->>N: Mint CarNFT
-    else Fragment (80%)
-        V->>N: Mint FragmentNFT
+
+    U->>A: Open Gacha
+    A->>T: Check IDRX balance
+    A->>V: Execute gacha
+    V->>T: Consume IDRX
+    V->>V: Calculate tier-based RNG
+    alt Complete Car
+        V->>N: Mint Car NFT
+    else Fragment
+        V->>N: Mint Fragment NFT
     end
-    N-->>U: NFT sent to wallet
-    F->>U: Show animation
-```
+    N-->>U: NFT transferred
+Key Properties
 
-### Tier System
+Every gacha roll produces an NFT
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><strong>🥉 Common</strong></td><td>50% drop rate</td><td>• Most accessible<br>• Good for beginners<br>• Trade value: 5-10K IDRX</td></tr><tr><td><strong>🥈 Rare</strong></td><td>30% drop rate</td><td>• Better designs<br>• Moderate rarity<br>• Trade value: 20-50K IDRX</td></tr><tr><td><strong>🥇 Epic</strong></td><td>15% drop rate</td><td>• Premium quality<br>• Collector's items<br>• Trade value: 100-200K IDRX</td></tr><tr><td><strong>💎 Legendary</strong></td><td>5% drop rate</td><td>• Ultra rare<br>• Status symbols<br>• Trade value: 500K+ IDRX</td></tr></tbody></table>
+Assets are owned by the user, not the platform
 
-### Costs
+NFTs remain valid even if the app is unavailable
 
-| Action | Cost | Reward |
-|--------|------|--------|
-| **Standard Roll** | 25,000 IDRX | 1 car or 1 fragment |
-| **10x Roll** | 225,000 IDRX (10% discount) | 10 cars/fragments |
-| **Fragment Crafting** | 5 fragments | 1 complete car (guaranteed tier) |
+2. 🧩 Fragment Crafting (Guaranteed Progression) (Live on Testnet)
+MiniGarage avoids pure RNG frustration by introducing fragment-based progression.
 
----
-
-## 2. 🧩 Fragment Crafting System
-
-### The Innovation
-
-Unlike pure RNG gacha, MiniGarage offers **guaranteed progression**:
-
-```
 Traditional Gacha:
-┌──────┐
-│ Roll │ → Random reward
-└──────┘
-Problem: Could roll 100x and never get legendary ❌
+Roll → Random Result → No Guarantee ❌
 
 MiniGarage:
-┌──────┐     ┌──────────┐     ┌──────────────┐
-│ Roll │ →  │ Fragment │  →  │ Collect 5 → CAR │
-└──────┘     └──────────┘     └──────────────┘
-Solution: Guaranteed legendary after 25 rolls ✅
-```
+Roll → Fragment → Progress → Guaranteed Car ✅
+How It Works
 
-### How Fragment Assembly Works
+Gacha may return a fragment instead of a full car
 
-```mermaid
-graph TD
-    A[Roll Gacha] --> B{Outcome}
-    B -->|20%| C[Complete Car]
-    B -->|80%| D[Fragment]
-    D --> E{Collect 5?}
-    E -->|No| F[Keep Rolling]
-    E -->|Yes| G[Craft Complete Car]
-    
-    C --> H[Add to Inventory]
-    G --> H
-    
-    style C fill:#90EE90
-    style G fill:#FFD700
-```
+Collect a full set of fragments of the same tier
 
-**Fragment Types:**
-- Each fragment has a **tier** (Common/Rare/Epic/Legendary)
-- Collect **5 fragments of same tier** = guaranteed car of that tier
-- Fragments are **tradeable NFTs**
-- Can mix and match from different gacha rolls
+Assemble fragments to mint a guaranteed car NFT
 
-**Example Journey:**
-```
-Day 1: Roll 10x gacha
-Result: 2 complete cars, 8 fragments (3 rare, 5 common)
+Fragments are tradeable NFTs
 
-Day 3: Collect 2 more common fragments
-Action: Craft 1 common car (5 fragments → 1 car) ✅
+This ensures that every roll contributes toward a meaningful outcome.
 
-Day 7: Buy 2 rare fragments from marketplace
-Action: Craft 1 rare car (5 fragments → 1 car) ✅
+3. 🏪 Peer-to-Peer Marketplace (Live on Testnet)
+Collectors can trade NFTs directly with each other inside the MiniGarage ecosystem.
 
-Total: Started with RNG, ended with guaranteed rewards!
-```
-
----
-
-## 3. 🏪 Peer-to-Peer Marketplace
-
-### Trading Features
-
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>🚗 Car NFTs</strong></td><td>• Buy/sell complete cars<br>• Set your own prices<br>• Filter by tier/model<br>• Instant transfers</td></tr><tr><td><strong>🧩 Fragments</strong></td><td>• Trade specific fragment tiers<br>• Complete your collection<br>• Lower entry prices<br>• Build toward goal cars</td></tr><tr><td><strong>💰 IDRX Only</strong></td><td>• No ETH required<br>• Predictable pricing<br>• Cultural relevance<br>• Sponsored gas fees</td></tr></tbody></table>
-
-### Marketplace Flow
-
-```mermaid
 sequenceDiagram
-    participant S as Seller
-    participant M as Marketplace
-    participant B as Buyer
-    participant N as NFT Contract
-    participant T as IDRX Token
-    
-    S->>M: List NFT (price: 50K IDRX)
-    M->>N: Lock NFT in escrow
-    
-    B->>M: View listing
-    B->>M: Buy NFT
-    M->>T: Transfer 50K from buyer
-    M->>N: Transfer NFT to buyer
-    M->>T: Send IDRX to seller (95%)
-    M->>T: Platform fee (5%)
-    
-    Note over S,T: All gas fees sponsored by backend
-```
+    participant Seller
+    participant Market
+    participant Buyer
 
-### Fee Structure
+    Seller->>Market: List NFT
+    Buyer->>Market: Purchase NFT
+    Market->>Seller: Transfer IDRX
+    Market->>Buyer: Transfer NFT
+Marketplace Characteristics
 
-| Transaction Type | Buyer | Seller | Platform |
-|------------------|-------|--------|----------|
-| **List NFT** | - | Free | Sponsors gas |
-| **Buy NFT** | Pays IDRX price | - | Sponsors gas |
-| **Platform Fee** | - | 5% of sale | Revenue |
-| **Cancel Listing** | - | Free | Sponsors gas |
+Peer-to-peer trading
 
-**Example:**
-```
-Seller lists Legendary Car for 500K IDRX
+No inflation of supply
 
-When sold:
-• Buyer pays: 500K IDRX
-• Platform keeps: 25K IDRX (5%)
-• Seller receives: 475K IDRX (95%)
-• Gas fees: $0 (sponsored) ✅
-```
+Transparent price discovery
 
----
+Gas-abstracted transactions
 
-## 4. 🎨 Diverse Car Collection
+Marketplace activity does not affect total NFT supply.
 
-### Car Models
+4. 🌍 Real-World Asset (RWA) Bridge (Roadmap)
+Each NFT car is designed to represent a limited physical collectible.
 
-We have **12 unique car models** across 4 tiers:
+Planned RWA Flow
 
-#### 🥉 Common Tier (3 models)
-- **City Commuter** - Compact hatchback
-- **Family Sedan** - Practical daily driver
-- **Delivery Van** - Utility vehicle
+NFT Ownership → Burn NFT → Claim Physical Asset
+Design Principles
 
-#### 🥈 Rare Tier (3 models)
-- **Sports Coupe** - Performance-focused
-- **Luxury Sedan** - Premium comfort
-- **Off-Road SUV** - Adventure ready
+NFT minting is capped by real-world asset supply
 
-#### 🥇 Epic Tier (3 models)
-- **Supercar** - Exotic performance
-- **Classic Muscle** - American power
-- **Hypercar** - Ultimate speed
+Each NFT can be redeemed only once
 
-#### 💎 Legendary Tier (3 models)
-- **F1 Racer** - Track monster
-- **Concept Car** - Futuristic design
-- **Vintage Classic** - Historical treasure
+Redemption requires on-chain burning
 
-### Visual Assets
+Prevents double-claims and oversupply
 
-All cars feature:
-- ✅ **High-quality 3D models**
-- ✅ **Multiple angles** (front, side, top)
-- ✅ **Rarity-based styling** (different colors/effects per tier)
-- ✅ **Metadata** (car name, tier, stats, serial number)
+This model connects digital collecting with real-world scarcity in a verifiable way.
 
----
+5. ⚡ Gas-Abstracted Experience with IDRX (Live on Testnet)
+MiniGarage abstracts gas fees using an in-app token model.
 
-## 5. 🎁 Faucet & Airdrop System
+Action	User Experience
+Open Gacha	Gasless
+Mint NFT	Sponsored
+Trade NFT	Gasless
+Assemble Fragments	Gasless
+Users interact with MiniGarage without handling ETH, gas fees, or failed transactions.
 
-### Free-to-Start
+6. 🔐 Seamless Access via Base Mini App (Live)
+MiniGarage runs as a Base Mini App, allowing instant access without traditional dApp friction.
 
-New users get:
+Supported Access Methods
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>🎯 First-Time Bonus</strong></td><td>• 100,000 IDRX on signup<br>• Enough for 4 gacha rolls<br>• No payment required<br>• Instant claim</td></tr><tr><td><strong>🔄 Daily Faucet</strong></td><td>• 25,000 IDRX per day<br>• 1 free gacha daily<br>• Encourages return visits<br>• Rate-limited per wallet</td></tr><tr><td><strong>🎊 Event Airdrops</strong></td><td>• Special occasions<br>• Milestone rewards<br>• Community growth<br>• Bonus IDRX amounts</td></tr></tbody></table>
+Farcaster
 
-### Airdrop Flow
+Email
 
-```mermaid
-graph LR
-    A[User Signs Up] --> B[Backend Check]
-    B --> C{First Time?}
-    C -->|Yes| D[Airdrop 100K IDRX]
-    C -->|No| E[Check Last Claim]
-    E --> F{24h Passed?}
-    F -->|Yes| G[Airdrop 25K IDRX]
-    F -->|No| H[Show Cooldown]
-    
-    D --> I[User Ready to Play]
-    G --> I
-    
-    style D fill:#90EE90
-    style G fill:#FFD700
-```
+External Wallet
 
----
+Why Mini Apps Matter
 
-## 6. 🔐 Privy Authentication
+No browser extension required
 
-### Seamless Login
+Native social discovery (Farcaster)
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>📧 Email</strong></td><td>Magic link login<br>No password needed</td></tr><tr><td><strong>🌐 Google</strong></td><td>OAuth integration<br>One-click access</td></tr><tr><td><strong>🐦 Twitter</strong></td><td>Social login<br>Share achievements</td></tr><tr><td><strong>💬 Discord</strong></td><td>Community integration<br>Gamer-friendly</td></tr></tbody></table>
+Faster onboarding for non-crypto users
 
-### Embedded Wallet Benefits
+Designed for consumer-scale adoption
 
-| Feature | Traditional Wallet | Privy Embedded |
-|---------|-------------------|----------------|
-| **Setup Time** | 10+ minutes | 30 seconds |
-| **Seed Phrase** | Required ❌ | Not needed ✅ |
-| **Gas Management** | Manual ❌ | Sponsored ✅ |
-| **Recovery** | Phrase backup ❌ | Email recovery ✅ |
-| **User Experience** | Complex ❌ | Simple ✅ |
+Users can start collecting within seconds, not minutes.
 
-### How It Works
+7. 🎨 Curated Car Collection (Live on Testnet)
+MiniGarage features a curated set of car models across multiple rarity tiers.
 
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant P as Privy
-    participant W as Embedded Wallet
-    participant B as Base Blockchain
-    
-    U->>P: Login with Google
-    P->>P: Verify OAuth
-    P->>W: Generate Wallet
-    W->>W: Encrypt Keys
-    W->>B: Register Address
-    B-->>U: 0x1234...abcd
-    
-    Note over U,B: Wallet created in 30 seconds
-    Note over W: Keys stored encrypted
-    Note over U: User never sees keys
-```
+Design Focus
 
----
+Distinct visual identity per tier
 
-## 7. 📱 Progressive Web App (PWA)
+High-quality assets
 
-### Mobile-First Design
+Clear rarity differentiation
 
-MiniGarage is built as a **PWA**, which means:
+Structured supply per model
 
-✅ **Installable** - Add to homescreen like native app
-✅ **Offline Ready** - Cache static assets
-✅ **Fast Loading** - Service worker optimization
-✅ **Responsive** - Works on any screen size
-✅ **Push Notifications** - (Coming soon)
+Each car NFT includes:
 
-### Installation
+Tier classification
 
-```
-Android/iOS:
-1. Visit minigarage.app
-2. Tap "Add to Home Screen"
-3. Icon appears on device
-4. Launch like native app! ✅
-```
+Visual metadata
 
-### Performance Optimizations
+On-chain ownership record
 
-| Feature | Implementation | Benefit |
-|---------|---------------|---------|
-| **Next.js 15** | Server components | Faster initial load |
-| **Image Optimization** | next/image | Automatic WebP/AVIF |
-| **Code Splitting** | Dynamic imports | Smaller bundle sizes |
-| **Route Prefetching** | Link preloading | Instant navigation |
+🔮 Future Enhancements (Roadmap)
+Planned features to strengthen long-term trust and engagement:
 
----
+Physical Redemption (RWA)
 
-## 8. 🎮 Gamification Elements
+ERC-6551 NFT Identity (serial number, provenance, redemption status)
 
-### Achievements (Coming Soon)
+Achievements & Collector Badges
 
-| Achievement | Requirement | Reward |
-|-------------|-------------|--------|
-| **First Roll** | Open 1 gacha | 10K IDRX |
-| **Collector** | Own 10 cars | Exclusive badge |
-| **Trader** | Complete 5 trades | Marketplace boost |
-| **Lucky Strike** | Get legendary on first roll | Rare title |
+Social & Community Features
 
-### Leaderboards (Roadmap)
+These features are not part of the current MVP and will be introduced progressively.
 
-- 🏆 **Most NFTs Owned**
-- 💰 **Highest IDRX Balance**
-- 📈 **Trading Volume**
-- 🎰 **Luckiest Roller** (legendary drops)
+🎯 Why These Features Matter
+MiniGarage is built around three principles:
 
----
+Easy Access  → Base Mini App
+Fair Play    → Gacha + Fragments
+Real Value   → NFT Ownership + RWA
+This combination creates a collectible experience that is:
 
-## 🎯 Feature Comparison
+Accessible to mainstream users
 
-### MiniGarage vs Competitors
+Fair to long-term collectors
 
-| Feature | Traditional Gacha | NFT Projects | MiniGarage |
-|---------|-------------------|--------------|------------|
-| **True Ownership** | ❌ | ✅ | ✅ |
-| **Easy Onboarding** | ✅ | ❌ | ✅ |
-| **Fragment System** | ❌ | ❌ | ✅ |
-| **Gasless UX** | ✅ | ❌ | ✅ |
-| **P2P Marketplace** | ❌ | ⚠️ | ✅ |
-| **Physical Redemption** | ❌ | ❌ | ✅ (Roadmap) |
+Grounded in real-world scarcity
 
----
+Next: Architecture
+Learn how MiniGarage is structured on-chain and off-chain →
 
-## 🚀 Coming Soon
-
-### Alpha Phase (Q2 2024)
-
-- [ ] **Mainnet Launch** - Migrate to Base mainnet
-- [ ] **Achievement System** - Unlock rewards
-- [ ] **Leaderboards** - Compete with friends
-- [ ] **Trading History** - Track all transactions
-
-### Beta Phase (Q3 2024)
-
-- [ ] **Physical Redemption** - Convert NFT → real diecast car
-- [ ] **Staking** - Earn IDRX from NFT holdings
-- [ ] **Tournaments** - Limited-time events
-- [ ] **Social Features** - Friend lists, chat
-
----
-
-{% hint style="success" %}
-**Ready to Try MiniGarage?**
-
-All features are live on testnet! Get started in 30 seconds:
-👉 [Quick Start Guide](../getting-started/quick-start.md)
-{% endhint %}
-
----
-
-## Next Steps
-
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>🚀 Quick Start</strong></td><td>Get started in 5 minutes</td><td><a href="../getting-started/quick-start.md">quick-start.md</a></td></tr><tr><td><strong>🏗️ Architecture</strong></td><td>Understand the system</td><td><a href="../technical/architecture.md">architecture.md</a></td></tr><tr><td><strong>🎰 Gacha System</strong></td><td>Deep dive into mechanics</td><td><a href="../features/gacha-system.md">gacha-system.md</a></td></tr></tbody></table>
+{% content-ref url="../technical/architecture.md" %}
+architecture.md
+{% endcontent-ref %}
