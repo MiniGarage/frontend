@@ -36,7 +36,7 @@ MiniGarage combines the **excitement of gacha mechanics** with the **security of
 
 MiniGarage is an **NFT-based car collection platform** where users can:
 
-![Overview](Overview.png)
+![Overview](overview.png)
 
 ### Core Actions
 
