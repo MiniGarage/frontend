@@ -1,46 +1,44 @@
-# 🏗️ Architecture
+# 🏗️ System Overview
 
 Complete technical architecture of MiniGarage.
 
----
+***
 
 ## 📊 System Architecture Diagram
 
-![System Architecture](architecture.png)
-
----
+***
 
 ## 🎨 Frontend (PWA Stack)
 
 ### Technology Choices
 
-| Tech | Version | Purpose |
-|------|---------|---------|
-| **Next.js** | 15.5.9 | React framework with App Router |
-| **React** | 19.2.3 | UI library |
-| **Tailwind CSS** | 3.4.15 | Utility-first styling |
-| **Privy SDK** | 3.12.0 | Auth + embedded wallets |
-| **ethers.js** | 6.16.0 | Blockchain interactions |
-| **Lucide React** | 0.563.0 | Icon library |
-| **next-pwa** | 5.6.0 | Progressive Web App features |
-| **Sonner** | 2.0.7 | Toast notifications |
+| Tech             | Version | Purpose                         |
+| ---------------- | ------- | ------------------------------- |
+| **Next.js**      | 15.5.9  | React framework with App Router |
+| **React**        | 19.2.3  | UI library                      |
+| **Tailwind CSS** | 3.4.15  | Utility-first styling           |
+| **Privy SDK**    | 3.12.0  | Auth + embedded wallets         |
+| **ethers.js**    | 6.16.0  | Blockchain interactions         |
+| **Lucide React** | 0.563.0 | Icon library                    |
+| **next-pwa**     | 5.6.0   | Progressive Web App features    |
+| **Sonner**       | 2.0.7   | Toast notifications             |
 
 ### Why Next.js 15?
 
-- ✅ **App Router** - Modern routing with layouts
-- ✅ **Server Components** - Better performance
-- ✅ **API Routes** - Built-in backend for simple tasks
-- ✅ **Image Optimization** - Automatic image resizing
-- ✅ **SEO** - Server-side rendering for metadata
-- ✅ **PWA Support** - Works great with next-pwa
+* ✅ **App Router** - Modern routing with layouts
+* ✅ **Server Components** - Better performance
+* ✅ **API Routes** - Built-in backend for simple tasks
+* ✅ **Image Optimization** - Automatic image resizing
+* ✅ **SEO** - Server-side rendering for metadata
+* ✅ **PWA Support** - Works great with next-pwa
 
 ### Why Tailwind CSS?
 
-- ✅ **Rapid Development** - No context switching
-- ✅ **Consistent Design** - Design system in config
-- ✅ **Small Bundle** - Purges unused styles
-- ✅ **Responsive** - Mobile-first approach
-- ✅ **Dark Mode** - Built-in support (future)
+* ✅ **Rapid Development** - No context switching
+* ✅ **Consistent Design** - Design system in config
+* ✅ **Small Bundle** - Purges unused styles
+* ✅ **Responsive** - Mobile-first approach
+* ✅ **Dark Mode** - Built-in support (future)
 
 ### Project Structure
 
@@ -87,7 +85,7 @@ src/
 └── utils/                  # Helper functions
 ```
 
----
+***
 
 ## 🔐 Privy (Authentication)
 
@@ -111,21 +109,21 @@ src/
 
 ### Supported Login Methods
 
-| Method | Icon | User Type |
-|--------|------|-----------|
-| **Email** | 📧 | General users |
-| **Google** | 🔵 | Mainstream users |
-| **Twitter** | 🐦 | Crypto-native users |
-| **Discord** | 💬 | Gamers |
-| **Wallet** | 🔐 | MetaMask/Rainbow users |
+| Method      | Icon | User Type              |
+| ----------- | ---- | ---------------------- |
+| **Email**   | 📧   | General users          |
+| **Google**  | 🔵   | Mainstream users       |
+| **Twitter** | 🐦   | Crypto-native users    |
+| **Discord** | 💬   | Gamers                 |
+| **Wallet**  | 🔐   | MetaMask/Rainbow users |
 
 ### Why Privy?
 
-- ✅ **No seed phrases** - Users never see private keys
-- ✅ **Social recovery** - Recover via email/OAuth
-- ✅ **Embedded wallet** - Native Web3 experience
-- ✅ **Multi-chain** - Supports Base, Ethereum, etc.
-- ✅ **Export option** - Users can export keys later
+* ✅ **No seed phrases** - Users never see private keys
+* ✅ **Social recovery** - Recover via email/OAuth
+* ✅ **Embedded wallet** - Native Web3 experience
+* ✅ **Multi-chain** - Supports Base, Ethereum, etc.
+* ✅ **Export option** - Users can export keys later
 
 ### Privy Configuration
 
@@ -151,7 +149,7 @@ import { PrivyProvider } from '@privy-io/react-auth';
 </PrivyProvider>
 ```
 
----
+***
 
 ## ⚡ RPC Provider & Indexer
 
@@ -160,40 +158,44 @@ import { PrivyProvider } from '@privy-io/react-auth';
 **Primary:** `https://sepolia.base.org` (Public)
 
 **Backup Plans:**
-- Alchemy Base Sepolia
-- Infura Base support
-- Self-hosted archive node (future)
+
+* Alchemy Base Sepolia
+* Infura Base support
+* Self-hosted archive node (future)
 
 ### Why Public RPC?
 
-- ✅ **Free** - No API key needed for hackathon
-- ✅ **Reliable** - Coinbase infrastructure
-- ✅ **Rate limits** - 10 req/sec (enough for MVP)
+* ✅ **Free** - No API key needed for hackathon
+* ✅ **Reliable** - Coinbase infrastructure
+* ✅ **Rate limits** - 10 req/sec (enough for MVP)
 
 ### Indexer (Future)
 
 **Current:** Direct RPC calls via ethers.js
 
 **Future:** Use The Graph for:
-- Historical transaction queries
-- NFT ownership tracking
-- Marketplace activity feed
-- Analytics dashboard
 
----
+* Historical transaction queries
+* NFT ownership tracking
+* Marketplace activity feed
+* Analytics dashboard
+
+***
 
 ## 📦 Metadata Storage
 
 ### Current: Backend API
 
 **Why:**
-- ✅ Fast iteration during hackathon
-- ✅ No IPFS setup complexity
-- ✅ Easy to update metadata
+
+* ✅ Fast iteration during hackathon
+* ✅ No IPFS setup complexity
+* ✅ Easy to update metadata
 
 **Cons:**
-- ❌ Centralized (single point of failure)
-- ❌ Not truly decentralized
+
+* ❌ Centralized (single point of failure)
+* ❌ Not truly decentralized
 
 ### Metadata Structure
 
@@ -230,6 +232,7 @@ import { PrivyProvider } from '@privy-io/react-auth';
 4. **Benefit:** Permanent, decentralized storage
 
 **Pinata Integration:**
+
 ```javascript
 const pinataSDK = require('@pinata/sdk');
 const pinata = pinataSDK(API_KEY, API_SECRET);
@@ -244,7 +247,7 @@ const metadataRes = await pinata.pinJSONToIPFS(metadata);
 const tokenURI = `ipfs://${metadataRes.IpfsHash}`;
 ```
 
----
+***
 
 ## 🚀 Deployment
 
@@ -253,36 +256,40 @@ const tokenURI = `ipfs://${metadataRes.IpfsHash}`;
 **URL:** [mini-garage.vercel.app](https://mini-garage.vercel.app)
 
 **Why Vercel:**
-- ✅ **Next.js optimized** - Best performance
-- ✅ **Auto deployments** - GitHub integration
-- ✅ **Edge Network** - Fast globally
-- ✅ **Free tier** - Perfect for hackathon
-- ✅ **Custom domains** - Easy DNS setup
+
+* ✅ **Next.js optimized** - Best performance
+* ✅ **Auto deployments** - GitHub integration
+* ✅ **Edge Network** - Fast globally
+* ✅ **Free tier** - Perfect for hackathon
+* ✅ **Custom domains** - Easy DNS setup
 
 **Build Command:**
+
 ```bash
 npm run build
 ```
 
 **Output:** Static + serverless functions
 
----
+***
 
 ### Backend: Node.js on Railway/Render
 
 **Alternative 1: Railway**
-- ✅ PostgreSQL included
-- ✅ Simple deployment
-- ✅ Auto-scaling
+
+* ✅ PostgreSQL included
+* ✅ Simple deployment
+* ✅ Auto-scaling
 
 **Alternative 2: Render**
-- ✅ Free tier
-- ✅ Persistent storage
-- ✅ Easy env vars
+
+* ✅ Free tier
+* ✅ Persistent storage
+* ✅ Easy env vars
 
 **Current:** Backend integrated with frontend via Next.js API routes (for simplicity)
 
----
+***
 
 ### Smart Contracts: Base Sepolia
 
@@ -295,11 +302,12 @@ npx hardhat run scripts/deploy.js --network baseSepolia
 ```
 
 **Post-Deployment:**
+
 1. Verify on BaseScan
 2. Update frontend `.env` with addresses
 3. Grant minter roles to backend wallet
 
----
+***
 
 ## 🔄 Data Flow Examples
 
@@ -345,39 +353,39 @@ npx hardhat run scripts/deploy.js --network baseSepolia
 13. Frontend: Show animation + update UI
 ```
 
----
+***
 
 ## 📊 Performance Metrics
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| **Page Load** | <2s | ~1.5s |
-| **Time to Interactive** | <3s | ~2.5s |
-| **Lighthouse Score** | 90+ | 92 |
-| **Bundle Size** | <300KB | ~250KB |
-| **API Response** | <500ms | ~300ms |
-| **TX Confirmation** | <5s | ~3s |
+| Metric                  | Target | Current |
+| ----------------------- | ------ | ------- |
+| **Page Load**           | <2s    | \~1.5s  |
+| **Time to Interactive** | <3s    | \~2.5s  |
+| **Lighthouse Score**    | 90+    | 92      |
+| **Bundle Size**         | <300KB | \~250KB |
+| **API Response**        | <500ms | \~300ms |
+| **TX Confirmation**     | <5s    | \~3s    |
 
----
+***
 
 ## 🔐 Security Architecture
 
-| Layer | Protection |
-|-------|------------|
-| **Frontend** | Input validation, XSS prevention |
-| **API** | Privy JWT, rate limiting, CORS |
-| **Smart Contracts** | OpenZeppelin, ReentrancyGuard |
-| **Database** | SQL injection protection, encrypted data |
-| **Wallet** | Privy encryption, no private key exposure |
+| Layer               | Protection                                |
+| ------------------- | ----------------------------------------- |
+| **Frontend**        | Input validation, XSS prevention          |
+| **API**             | Privy JWT, rate limiting, CORS            |
+| **Smart Contracts** | OpenZeppelin, ReentrancyGuard             |
+| **Database**        | SQL injection protection, encrypted data  |
+| **Wallet**          | Privy encryption, no private key exposure |
 
----
+***
 
 ## 🧪 Testing Stack
 
-| Type | Tool |
-|------|------|
-| **Unit Tests** | Jest |
+| Type                | Tool                  |
+| ------------------- | --------------------- |
+| **Unit Tests**      | Jest                  |
 | **Component Tests** | React Testing Library |
-| **E2E Tests** | Playwright |
-| **Contract Tests** | Hardhat + Chai |
-| **Load Tests** | k6 (future) |
+| **E2E Tests**       | Playwright            |
+| **Contract Tests**  | Hardhat + Chai        |
+| **Load Tests**      | k6 (future)           |
